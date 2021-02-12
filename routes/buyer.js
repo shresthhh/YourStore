@@ -1,13 +1,13 @@
-const express = require('express');
-const User = require('./../models/userModel');
+const express = require("express");
+const User = require("./../models/userModel");
 const router = new express.Router();
 
-module.exports = router.post('/signup', async (req, res) => {
+router.post("/signup", async (req, res) => {
   const newUser = new User(req.body);
   try {
     await newUser.save();
     res.status(201).json({
-      status: 'success',
+      status: "success",
       data: {
         user: newUser,
       },
@@ -16,3 +16,5 @@ module.exports = router.post('/signup', async (req, res) => {
     console.log(e);
   }
 });
+
+module.exports = router;

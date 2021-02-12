@@ -1,7 +1,7 @@
-const mongoose = require('mongoose');
-const validator = require('validator');
+const mongoose = require("mongoose");
+const validator = require("validator");
 
-const userScema = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
   fname: {
     type: String,
     required: true,
@@ -20,7 +20,7 @@ const userScema = new mongoose.Schema({
     lowercase: true,
     validate(value) {
       if (!validator.isEmail(value)) {
-        throw new Error('Invalid Email');
+        throw new Error("Invalid Email");
       }
     },
   },
@@ -32,7 +32,7 @@ const userScema = new mongoose.Schema({
   },
   gender: {
     type: String,
-    enum: ['m', 'f', 'o'],
+    enum: ["m", "f", "o"],
     required: true,
   },
   dob: {
@@ -44,7 +44,7 @@ const userScema = new mongoose.Schema({
     required: true,
     trim: true,
     validate(value) {
-      if (value < 14) throw new Error('You are too young!');
+      if (value < 14) throw new Error("You are too young!");
     },
   },
   profilePicture: {
@@ -55,11 +55,8 @@ const userScema = new mongoose.Schema({
     type: Number,
     required: true,
     trim: true,
-    validate(value) {
-      if (value.length != 10) throw new Error('Invalid Number');
-    },
   },
 });
 
-const User = mongoose.model('User', userScema);
+const User = mongoose.model("User", userSchema);
 module.exports = User;
