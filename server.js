@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
-// const app = require('./app.js');
+const app = require('./app.js');
 const dotenv = require('dotenv');
 
 dotenv.config({ path: './config.env' });
-// app.use(require('cors')());
+app.use(require('cors')());
 
 const DB = process.env.DATABASE.replace(
   '<PASSWORD>',
@@ -23,6 +23,6 @@ mongoose
     console.log('DB Connection Successful');
   });
 
-// app.listen(PORT, function () {
-//   console.log(`App running on port ${PORT}...`);
-// });
+app.listen(PORT, function () {
+  console.log(`App running on port ${PORT}...`);
+});
