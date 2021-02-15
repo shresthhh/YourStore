@@ -1,6 +1,7 @@
 const express = require("express");
 const Shop = require("./../models/shopModel");
 const router = new express.Router();
+const auth = require("./../middleware/shopAuth");
 
 router.post("/registerShop", async (req, res) => {
   const newShop = new Shop(req.body);

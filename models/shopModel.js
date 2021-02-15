@@ -1,5 +1,10 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
+
+const Item = require("./itemModel");
+const ItemSchema = mongoose.model("Item").schema;
 
 const GeoSchema = new mongoose.Schema({
   type: {
@@ -52,7 +57,23 @@ const shopSchema = new mongoose.Schema({
     trim: true,
     required: true,
   },
+  item: [
+    {
+      item: {
+        type: ItemSchema,
+        required: true,
+      },
+    },
+  ],
+  tokens: [
+    {
+      token: {
+        type: String,
+        required: true,
+      },
+    },
+  ],
 });
 
-const shop = mongoose.model("Shop", shopSchema);
-module.exports = shop;
+const Shop = mongoose.model("Shop", shopSchema);
+module.exports = Shop;
