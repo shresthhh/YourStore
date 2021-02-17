@@ -75,6 +75,20 @@ const shopSchema = new mongoose.Schema({
   ],
 });
 
+shopSchema.statics.findByCredentials = async (email, password) => {
+  const store = await Shop.findOne({ email });
+  if (!store) {
+    throw new Error("Unable to login");
+  }
+
+  const isMatch = await bcrypt.compare(password, store.password);
+  if (!isMatch) {
+    throw new Error("Invalid Credentials");
+  }
+
+  return store;
+};
+
 shopSchema.pre("save", async function (next) {
   const shop = this;
   if (shop.isModified("password")) {
