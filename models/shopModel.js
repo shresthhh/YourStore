@@ -75,5 +75,13 @@ const shopSchema = new mongoose.Schema({
   ],
 });
 
+shopSchema.pre("save", async function (next) {
+  const shop = this;
+  if (shop.isModified("password")) {
+    shop.password = await bcrypt.hash(shop.password, 8);
+  }
+  next();
+});
+
 const Shop = mongoose.model("Shop", shopSchema);
 module.exports = Shop;
