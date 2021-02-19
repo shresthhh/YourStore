@@ -57,7 +57,7 @@ const shopSchema = new mongoose.Schema({
     trim: true,
     required: true,
   },
-  item: [
+  items: [
     {
       item: {
         type: ItemSchema,
