@@ -75,6 +75,16 @@ const shopSchema = new mongoose.Schema({
   ],
 });
 
+shopSchema.methods.generateAuthToken = async function () {
+  const store = this;
+  const token = jwt.sign({ _id: store._id.toString() }, "NarutoIsAmazing");
+
+  store.tokens = store.tokens.concat({ token });
+  await store.save();
+
+  return token;
+};
+
 shopSchema.statics.findByCredentials = async (email, password) => {
   const store = await Shop.findOne({ email });
   if (!store) {
