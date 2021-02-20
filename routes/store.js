@@ -60,7 +60,7 @@ router.post("/store/logoutAll", auth, async (req, res) => {
 router.post("/stores/myStore/addItem", auth, async (req, res) => {
   const store = req.store;
   try {
-    const newItem = await Item.create(req.body);
+    const newItem = await new Item(req.body);
     store.items = store.items.concat({ item: newItem });
     await store.save();
     res.status(200).send(store);
