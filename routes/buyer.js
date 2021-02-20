@@ -3,7 +3,7 @@ const User = require("./../models/userModel");
 const router = new express.Router();
 const auth = require("./../middleware/userAuth");
 
-router.post("/buyer/signup", async (req, res) => {
+router.post("/user/signup", async (req, res) => {
   const newUser = new User(req.body);
   try {
     await newUser.save();
@@ -19,7 +19,7 @@ router.post("/buyer/signup", async (req, res) => {
   }
 });
 
-router.post("/buyer/login", async (req, res) => {
+router.post("/user/login", async (req, res) => {
   try {
     const user = await User.findByCredentials(
       req.body.email,
@@ -29,6 +29,30 @@ router.post("/buyer/login", async (req, res) => {
     res.status(200).json(user);
   } catch (e) {
     res.status(400).send(e);
+  }
+});
+
+router.post("/user/logout", auth, async (req, res) => {
+  try {
+    req.user.tokens = req.user.tokens.filter((token) => {
+      return token.token !== req.token;
+    });
+
+    await req.user.save();
+
+    res.status(200).send("Logged out successfully");
+  } catch (e) {
+    res.status(500).send(e);
+  }
+});
+
+router.post("/user/logoutAll", auth, async (req, res) => {
+  try {
+    req.user.tokens = [];
+    await req.user.save();
+    res.status(200).send("Logged out from all devices");
+  } catch (e) {
+    res.status(500).send(e);
   }
 });
 

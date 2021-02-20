@@ -34,6 +34,29 @@ router.post("/store/login", async (req, res) => {
   }
 });
 
+router.post("/store/logout", auth, async (req, res) => {
+  try {
+    req.store.tokens = req.store.tokens.filter((token) => {
+      return token.token !== req.token;
+    });
+
+    await req.store.save();
+    res.status(200).send("Logged out successfully");
+  } catch (e) {
+    res.status(500).send(e);
+  }
+});
+
+router.post("/store/logoutAll", auth, async (req, res) => {
+  try {
+    req.store.tokens = [];
+    req.store.save();
+    res.status(200).send("Logged out from all devices");
+  } catch (e) {
+    res.status(500).send(e);
+  }
+});
+
 router.post("/stores/myStore/addItem", auth, async (req, res) => {
   const store = req.store;
   try {
