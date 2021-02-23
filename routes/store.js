@@ -61,7 +61,7 @@ router.post("/myStore/addItem", auth, async (req, res) => {
   const store = req.store;
   try {
     const newItem = await new Item(req.body);
-    store.items = store.items.concat({ item: newItem });
+    store.items = store.items.concat(newItem);
     await store.save();
     res.status(200).send(store);
   } catch (e) {
@@ -95,16 +95,7 @@ router.get("/myProducts", auth, async (req, res) => {
 
 router.patch("/myProducts/:id", auth, async (req, res) => {
   try {
-    const product = await Shop.items.item.update(
-      { _id: ObjectId(req.params.id) },
-      { $set: req.body }
-    );
-
-    if (!product) {
-      return res.status(404).send("Item not found");
-    }
-
-    res.status(200).send(product);
+    const store = req.store;
   } catch (e) {
     res.status(400).send(e);
   }
