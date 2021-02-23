@@ -57,7 +57,7 @@ router.post("/store/logoutAll", auth, async (req, res) => {
   }
 });
 
-router.post("/stores/myStore/addItem", auth, async (req, res) => {
+router.post("/myStore/addItem", auth, async (req, res) => {
   const store = req.store;
   try {
     const newItem = await new Item(req.body);
@@ -77,7 +77,7 @@ router.get("/stores/myStore", auth, async (req, res) => {
   }
 });
 
-router.get("/stores/myStore/myProducts", auth, async (req, res) => {
+router.get("/myProducts", auth, async (req, res) => {
   if (!req.store) {
     res.status(401).send("Login!");
   } else {
@@ -90,6 +90,23 @@ router.get("/stores/myStore/myProducts", auth, async (req, res) => {
     } catch (e) {
       res.status(400).send(e);
     }
+  }
+});
+
+router.patch("/myProducts/:id", auth, async (req, res) => {
+  try {
+    const product = await Shop.items.item.update(
+      { _id: ObjectId(req.params.id) },
+      { $set: req.body }
+    );
+
+    if (!product) {
+      return res.status(404).send("Item not found");
+    }
+
+    res.status(200).send(product);
+  } catch (e) {
+    res.status(400).send(e);
   }
 });
 

@@ -59,6 +59,7 @@ const shopSchema = new mongoose.Schema({
   },
   items: [
     {
+      _id: false,
       item: {
         type: ItemSchema,
         required: true,
