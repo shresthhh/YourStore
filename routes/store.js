@@ -99,7 +99,6 @@ router.patch('/myProducts/:id', auth, async (req, res) => {
     let temp = 'items.$.'.concat(key);
     x[temp] = value;
   }
-  console.log(x);
   try {
     const product = await Shop.updateOne(
       { 'items._id': req.params.id },
