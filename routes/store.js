@@ -1,17 +1,17 @@
-const express = require("express");
-const Shop = require("../models/storeModel");
-const Item = require("./../models/itemModel");
+const express = require('express');
+const Shop = require('../models/storeModel');
+const Item = require('./../models/itemModel');
 const router = new express.Router();
-const auth = require("../middleware/storeAuth");
+const auth = require('../middleware/storeAuth');
 
-router.post("/store/register", async (req, res) => {
+router.post('/store/register', async (req, res) => {
   const newStore = new Shop(req.body);
 
   try {
     await newStore.save();
     const token = await newStore.generateAuthToken();
     res.status(201).json({
-      status: "success",
+      status: 'success',
       data: {
         Shop: newStore,
       },
@@ -21,7 +21,7 @@ router.post("/store/register", async (req, res) => {
   }
 });
 
-router.post("/store/login", async (req, res) => {
+router.post('/store/login', async (req, res) => {
   try {
     const store = await Shop.findByCredentials(
       req.body.email,
@@ -34,30 +34,30 @@ router.post("/store/login", async (req, res) => {
   }
 });
 
-router.post("/store/logout", auth, async (req, res) => {
+router.post('/store/logout', auth, async (req, res) => {
   try {
     req.store.tokens = req.store.tokens.filter((token) => {
       return token.token !== req.token;
     });
 
     await req.store.save();
-    res.status(200).send("Logged out successfully");
+    res.status(200).send('Logged out successfully');
   } catch (e) {
     res.status(500).send(e);
   }
 });
 
-router.post("/store/logoutAll", auth, async (req, res) => {
+router.post('/store/logoutAll', auth, async (req, res) => {
   try {
     req.store.tokens = [];
     req.store.save();
-    res.status(200).send("Logged out from all devices");
+    res.status(200).send('Logged out from all devices');
   } catch (e) {
     res.status(500).send(e);
   }
 });
 
-router.post("/myStore/addItem", auth, async (req, res) => {
+router.post('/myStore/addItem', auth, async (req, res) => {
   const store = req.store;
   try {
     const newItem = await new Item(req.body);
@@ -69,17 +69,17 @@ router.post("/myStore/addItem", auth, async (req, res) => {
   }
 });
 
-router.get("/stores/myStore", auth, async (req, res) => {
+router.get('/stores/myStore', auth, async (req, res) => {
   if (!req.store) {
-    res.status(401).send("Login!");
+    res.status(401).send('Login!');
   } else {
     res.status(200).send(req.store);
   }
 });
 
-router.get("/myProducts", auth, async (req, res) => {
+router.get('/myProducts', auth, async (req, res) => {
   if (!req.store) {
-    res.status(401).send("Login!");
+    res.status(401).send('Login!');
   } else {
     const myProducts = [];
     try {
@@ -93,10 +93,27 @@ router.get("/myProducts", auth, async (req, res) => {
   }
 });
 
-router.patch("/myProducts/:id", auth, async (req, res) => {
+router.patch('/myProducts/:id', auth, async (req, res) => {
+  let x = {};
+  for (const [key, value] of Object.entries(req.body)) {
+    let temp = 'items.$.'.concat(key);
+    x[temp] = value;
+  }
+  console.log(x);
   try {
-    const store = req.store;
+    const product = await Shop.updateOne(
+      { 'items._id': req.params.id },
+      {
+        $set: x
+      }
+    );
+
+    if (!product) {
+      return res.status(404).send('Item not found');
+    }
+    res.status(200).send(product);
   } catch (e) {
+    console.log(e);
     res.status(400).send(e);
   }
 });
