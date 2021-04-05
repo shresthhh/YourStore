@@ -70,6 +70,18 @@ router.post('/myStore/addItem', auth, async (req, res) => {
   }
 });
 
+router.post('/myStore/itemsToDeliver', auth, async (req, res) => {
+  const store = req.store;
+  try {
+    const newItem = await new Item(req.body);
+    store.delivery = store.delivery.concat(newItem);
+    await store.save();
+    res.status(200).send(store);
+  } catch (e) {
+    res.status(400).send(e);
+  }
+});
+
 router.get('/stores/myStore', auth, async (req, res) => {
   if (!req.store) {
     res.status(401).send('Login!');
