@@ -63,6 +63,12 @@ const shopSchema = new mongoose.Schema({
       required: true,
     },
   ],
+  delivery: [
+    {
+      type: ItemSchema,
+      required: true,
+    },
+  ],
   tokens: [
     {
       token: {
