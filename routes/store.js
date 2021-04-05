@@ -3,6 +3,7 @@ const Shop = require('../models/storeModel');
 const Item = require('./../models/itemModel');
 const router = new express.Router();
 const auth = require('../middleware/storeAuth');
+var ObjectId = require('mongoose').Types.ObjectId;
 
 router.post('/store/register', async (req, res) => {
   const newStore = new Shop(req.body);
@@ -103,8 +104,9 @@ router.patch('/myProducts/:id', auth, async (req, res) => {
     const product = await Shop.updateOne(
       { 'items._id': req.params.id },
       {
-        $set: x
-      }
+        $set: x,
+      },
+      { new: true }
     );
 
     if (!product) {
@@ -115,6 +117,23 @@ router.patch('/myProducts/:id', auth, async (req, res) => {
     console.log(e);
     res.status(400).send(e);
   }
+});
+
+router.patch('/myProducts/delete/:id', auth, async (req, res) => {
+  Shop.updateOne(
+    { _id: new ObjectId(req.store._id) },
+    {
+      $pull: {
+        items: { _id: new ObjectId(req.params.id) },
+      },
+    },
+    (err, data) => {
+      if (err) {
+        return res.status(500).json({ error: 'error in deleting item' });
+      }
+      res.json(data);
+    }
+  );
 });
 
 module.exports = router;
