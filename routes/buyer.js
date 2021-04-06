@@ -70,11 +70,15 @@ router.post('/user/addCart/:id', auth, async (req, res) => {
   const User = req.user;
   try {
     const shop = await Shop.findOne({items: {$elemMatch: {_id: new ObjectId(req.params.id)}}}); //change it to search with shop id and then compare each item with object id in request parameters
-    shop.items.forEach((e)=>{
-      if(e._id == req.params.id)
+    shop.items.forEach((e, index)=>{
+      if(e._id == req.params.id && e.quantity >0){
         item = e;
+        User.cart = User.cart.concat(item);
+        e.quantity-=1;
+        return;
+      }
     })
-    User.cart = User.cart.concat(item);
+    await shop.save();
     await User.save();
     res.status(200).send(User);
   } catch (e) {
@@ -82,12 +86,16 @@ router.post('/user/addCart/:id', auth, async (req, res) => {
   }
 });
 
+router.get('/user/Cart', auth, async(req, res) => {
+
+})
+
 router.post('/user/addWishlist/:id', auth, async (req, res) => {
   const User = req.user;
   try {
     const shop = await Shop.findOne({items: {$elemMatch: {_id: new ObjectId(req.params.id)}}}); //change it to search with shop id and then compare each item with object id in request parameters
-    shop.items.forEach((e)=>{
-      if(e._id == req.params.id)
+    shop.items.forEach((e,index)=>{
+      if(e._id == req.params.id && e.quantity>0)
         item = e;
     })
     User.wishlist = User.wishlist.concat(item);
