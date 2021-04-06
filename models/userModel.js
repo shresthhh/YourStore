@@ -1,7 +1,9 @@
-const mongoose = require("mongoose");
-const validator = require("validator");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+const mongoose = require('mongoose');
+const validator = require('validator');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const Item = require('./itemModel');
+const ItemSchema = mongoose.model('Item').schema;
 
 const userSchema = new mongoose.Schema({
   fname: {
@@ -22,7 +24,7 @@ const userSchema = new mongoose.Schema({
     lowercase: true,
     validate(value) {
       if (!validator.isEmail(value)) {
-        throw new Error("Invalid Email");
+        throw new Error('Invalid Email');
       }
     },
   },
@@ -34,7 +36,7 @@ const userSchema = new mongoose.Schema({
   },
   gender: {
     type: String,
-    enum: ["m", "f", "o"],
+    enum: ['m', 'f', 'o'],
     required: true,
   },
   dob: {
@@ -46,7 +48,7 @@ const userSchema = new mongoose.Schema({
     required: true,
     trim: true,
     validate(value) {
-      if (value < 14) throw new Error("You are too young!");
+      if (value < 14) throw new Error('You are too young!');
     },
   },
   profilePicture: {
@@ -58,6 +60,18 @@ const userSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
+  cart: [
+    {
+      type: ItemSchema,
+      required: true,
+    },
+  ],
+  wishlist: [
+    {
+      type: ItemSchema,
+      required: true,
+    },
+  ],
   tokens: [
     {
       token: {
@@ -70,7 +84,7 @@ const userSchema = new mongoose.Schema({
 
 userSchema.methods.generateAuthToken = async function () {
   const user = this;
-  const token = jwt.sign({ _id: user._id.toString() }, "NarutoIsAmazing");
+  const token = jwt.sign({ _id: user._id.toString() }, 'NarutoIsAmazing');
 
   user.tokens = user.tokens.concat({ token });
   await user.save();
@@ -81,24 +95,24 @@ userSchema.methods.generateAuthToken = async function () {
 userSchema.statics.findByCredentials = async (email, password) => {
   const user = await User.findOne({ email });
   if (!user) {
-    throw new Error("Unable to login");
+    throw new Error('Unable to login');
   }
 
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
-    throw new Error("Incorrect Credentials");
+    throw new Error('Incorrect Credentials');
   }
 
   return user;
 };
 
-userSchema.pre("save", async function (next) {
+userSchema.pre('save', async function (next) {
   const user = this;
-  if (user.isModified("password")) {
+  if (user.isModified('password')) {
     user.password = await bcrypt.hash(user.password, 8);
   }
   next();
 });
 
-const User = mongoose.model("User", userSchema);
+const User = mongoose.model('User', userSchema);
 module.exports = User;

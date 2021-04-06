@@ -1,15 +1,17 @@
-const express = require("express");
-const User = require("./../models/userModel");
+const express = require('express');
+const User = require('./../models/userModel');
+const Shop = require('./../models/storeModel');
 const router = new express.Router();
-const auth = require("./../middleware/userAuth");
+const auth = require('./../middleware/userAuth');
+var ObjectId = require('mongoose').Types.ObjectId;
 
-router.post("/user/signup", async (req, res) => {
+router.post('/user/signup', async (req, res) => {
   const newUser = new User(req.body);
   try {
     await newUser.save();
     const token = await newUser.generateAuthToken();
     res.status(201).json({
-      status: "success",
+      status: 'success',
       data: {
         user: newUser,
       },
@@ -19,7 +21,7 @@ router.post("/user/signup", async (req, res) => {
   }
 });
 
-router.post("/user/login", async (req, res) => {
+router.post('/user/login', async (req, res) => {
   try {
     const user = await User.findByCredentials(
       req.body.email,
@@ -32,7 +34,7 @@ router.post("/user/login", async (req, res) => {
   }
 });
 
-router.post("/user/logout", auth, async (req, res) => {
+router.post('/user/logout', auth, async (req, res) => {
   try {
     req.user.tokens = req.user.tokens.filter((token) => {
       return token.token !== req.token;
@@ -40,27 +42,59 @@ router.post("/user/logout", auth, async (req, res) => {
 
     await req.user.save();
 
-    res.status(200).send("Logged out successfully");
+    res.status(200).send('Logged out successfully');
   } catch (e) {
     res.status(500).send(e);
   }
 });
 
-router.post("/user/logoutAll", auth, async (req, res) => {
+router.post('/user/logoutAll', auth, async (req, res) => {
   try {
     req.user.tokens = [];
     await req.user.save();
-    res.status(200).send("Logged out from all devices");
+    res.status(200).send('Logged out from all devices');
   } catch (e) {
     res.status(500).send(e);
   }
 });
 
-router.get("/users/me", auth, async (req, res) => {
+router.get('/users/me', auth, async (req, res) => {
   if (!req.user) {
-    res.status(401).send("Login");
+    res.status(401).send('Login');
   } else {
     res.status(201).send(req.user);
+  }
+});
+
+router.post('/user/addCart/:id', auth, async (req, res) => {
+  const User = req.user;
+  try {
+    const shop = await Shop.findOne({items: {$elemMatch: {_id: new ObjectId(req.params.id)}}}); //change it to search with shop id and then compare each item with object id in request parameters
+    shop.items.forEach((e)=>{
+      if(e._id == req.params.id)
+        item = e;
+    })
+    User.cart = User.cart.concat(item);
+    await User.save();
+    res.status(200).send(User);
+  } catch (e) {
+    res.status(400).send(e);
+  }
+});
+
+router.post('/user/addWishlist/:id', auth, async (req, res) => {
+  const User = req.user;
+  try {
+    const shop = await Shop.findOne({items: {$elemMatch: {_id: new ObjectId(req.params.id)}}}); //change it to search with shop id and then compare each item with object id in request parameters
+    shop.items.forEach((e)=>{
+      if(e._id == req.params.id)
+        item = e;
+    })
+    User.wishlist = User.wishlist.concat(item);
+    await User.save();
+    res.status(200).send(User);
+  } catch (e) {
+    res.status(400).send(e);
   }
 });
 
