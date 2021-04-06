@@ -87,7 +87,18 @@ router.post('/user/addCart/:id', auth, async (req, res) => {
 });
 
 router.get('/user/Cart', auth, async(req, res) => {
-
+  if (!req.user) {
+    res.status(401).send('Login');
+  } else {
+    res.status(201).send(req.user.cart);
+  }
+})
+router.get('/user/Wishlist', auth, async(req, res) => {
+  if (!req.user) {
+    res.status(401).send('Login');
+  } else {
+    res.status(201).send(req.user.wishlist);
+  }
 })
 
 router.post('/user/addWishlist/:id', auth, async (req, res) => {
