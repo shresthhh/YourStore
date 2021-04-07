@@ -26,6 +26,10 @@ const itemSchema = new mongoose.Schema({
     type: Buffer,
     // reqired: true,
   },
+  tags: {
+    type: String, 
+    trim: true, 
+  }
 });
 
 const Item = mongoose.model("Item", itemSchema);

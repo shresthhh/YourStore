@@ -68,18 +68,20 @@ router.get('/users/me', auth, async (req, res) => {
 
 router.post('/user/addCart/:id/:quantity', auth, async (req, res) => {
   const User = req.user;
-  console.log(req.params.quantity)
+  console.log(req.params.quantity);
   try {
-    const shop = await Shop.findOne({items: {$elemMatch: {_id: new ObjectId(req.params.id)}}}); //change it to search with shop id and then compare each item with object id in request parameters
-    shop.items.forEach((e, index)=>{
-      if(e._id == req.params.id && (e.quantity-req.params.quantity) >=0){
+    const shop = await Shop.findOne({
+      items: { $elemMatch: { _id: new ObjectId(req.params.id) } },
+    }); //change it to search with shop id and then compare each item with object id in request parameters
+    shop.items.forEach((e, index) => {
+      if (e._id == req.params.id && e.quantity - req.params.quantity >= 0) {
         item = e;
-        item.cost *=req.params.quantity;
+        item.cost *= req.params.quantity;
         item.quantity = req.params.quantity;
         User.cart = User.cart.concat(item);
         return;
       }
-    })
+    });
     await User.save();
     res.status(200).send(User);
   } catch (e) {
@@ -87,29 +89,31 @@ router.post('/user/addCart/:id/:quantity', auth, async (req, res) => {
   }
 });
 
-router.get('/user/Cart', auth, async(req, res) => {
+router.get('/user/Cart', auth, async (req, res) => {
   if (!req.user) {
     res.status(401).send('Login');
   } else {
     res.status(201).send(req.user.cart);
   }
-})
-router.get('/user/Wishlist', auth, async(req, res) => {
+});
+
+router.get('/user/Wishlist', auth, async (req, res) => {
   if (!req.user) {
     res.status(401).send('Login');
   } else {
     res.status(201).send(req.user.wishlist);
   }
-})
+});
 
 router.post('/user/addWishlist/:id', auth, async (req, res) => {
   const User = req.user;
   try {
-    const shop = await Shop.findOne({items: {$elemMatch: {_id: new ObjectId(req.params.id)}}}); //change it to search with shop id and then compare each item with object id in request parameters
-    shop.items.forEach((e,index)=>{
-      if(e._id == req.params.id && e.quantity>0)
-        item = e;
-    })
+    const shop = await Shop.findOne({
+      items: { $elemMatch: { _id: new ObjectId(req.params.id) } },
+    }); //change it to search with shop id and then compare each item with object id in request parameters
+    shop.items.forEach((e, index) => {
+      if (e._id == req.params.id && e.quantity > 0) item = e;
+    });
     User.wishlist = User.wishlist.concat(item);
     await User.save();
     res.status(200).send(User);
