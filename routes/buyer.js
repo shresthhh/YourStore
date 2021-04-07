@@ -66,6 +66,30 @@ router.get('/users/me', auth, async (req, res) => {
   }
 });
 
+router.post('/user/cart/increase/:id/:quantity', auth, async (req, res) => {
+  const User = req.user;
+  console.log(User);
+  try {
+    const shop = await Shop.findOne({
+      items: { $elemMatch: { _id: new ObjectId(req.params.id) } },
+    });
+    shop.items.forEach((item, index) => {
+      if (
+        item._id == req.params.id &&
+        item.quantity - req.params.quantity >= 0
+      ) {
+        User.cart.forEach((item) =>{
+        item.quantity = item.quantity + parseInt(req.params.quantity);
+        })
+      }
+    });
+    await User.save();
+    res.status(200).send(User);
+  } catch (e) {
+    res.status(400).send(e);
+  }
+});
+
 router.post('/user/addCart/:id/:quantity', auth, async (req, res) => {
   const User = req.user;
   console.log(req.params.quantity);
@@ -76,7 +100,6 @@ router.post('/user/addCart/:id/:quantity', auth, async (req, res) => {
     shop.items.forEach((e, index) => {
       if (e._id == req.params.id && e.quantity - req.params.quantity >= 0) {
         item = e;
-        item.cost *= req.params.quantity;
         item.quantity = req.params.quantity;
         User.cart = User.cart.concat(item);
         return;
