@@ -68,7 +68,6 @@ router.get('/users/me', auth, async (req, res) => {
 
 router.post('/user/cart/increase/:id/:quantity', auth, async (req, res) => {
   const User = req.user;
-  console.log(User);
   try {
     const shop = await Shop.findOne({
       items: { $elemMatch: { _id: new ObjectId(req.params.id) } },
@@ -78,9 +77,9 @@ router.post('/user/cart/increase/:id/:quantity', auth, async (req, res) => {
         item._id == req.params.id &&
         item.quantity - req.params.quantity >= 0
       ) {
-        User.cart.forEach((item) =>{
-        item.quantity = item.quantity + parseInt(req.params.quantity);
-        })
+        User.cart.forEach((item) => {
+          item.quantity = item.quantity + parseInt(req.params.quantity);
+        });
       }
     });
     await User.save();
@@ -92,7 +91,6 @@ router.post('/user/cart/increase/:id/:quantity', auth, async (req, res) => {
 
 router.post('/user/addCart/:id/:quantity', auth, async (req, res) => {
   const User = req.user;
-  console.log(req.params.quantity);
   try {
     const shop = await Shop.findOne({
       items: { $elemMatch: { _id: new ObjectId(req.params.id) } },
