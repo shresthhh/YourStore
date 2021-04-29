@@ -72,6 +72,12 @@ const userSchema = new mongoose.Schema({
       required: true,
     },
   ],
+  OrderHistory: [
+    {
+      type: ItemSchema,
+      required: true,
+    },
+  ],
   address: [
     {
       type: String,
