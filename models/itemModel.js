@@ -29,6 +29,7 @@ const itemSchema = new mongoose.Schema({
   tags: {
     type: String, 
     trim: true, 
+    enum: ['Fruits', 'Vegetables', 'Meat', 'Dairy', 'Beverages', 'Drinks'],
   }
 });
 
