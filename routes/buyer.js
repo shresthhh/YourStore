@@ -143,4 +143,9 @@ router.post('/user/addWishlist/:id', auth, async (req, res) => {
   }
 });
 
+router.post('/user/checkout', auth, async(req, res) => {
+  const User = req.user;
+
+});
+
 module.exports = router;
