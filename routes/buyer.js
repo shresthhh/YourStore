@@ -58,6 +58,26 @@ router.post('/user/logoutAll', auth, async (req, res) => {
   }
 });
 
+router.post('/users/me/addAddress', auth, async (req, res) => {
+  const User = req.user;
+  console.log(req.user);
+  if (!req.user) {
+    res.status(401).send('Login');
+  } else {
+    try {
+      User.address = User.address.concat(req.body.address);
+      console.log(User.address);
+      await User.save();
+      res.status(201).json({
+        status: 'success',
+        User,
+      });
+    } catch (e) {
+      res.status(400).send(e);
+    }
+  }
+});
+
 router.get('/users/me', auth, async (req, res) => {
   if (!req.user) {
     res.status(401).send('Login');
@@ -143,9 +163,8 @@ router.post('/user/addWishlist/:id', auth, async (req, res) => {
   }
 });
 
-router.post('/user/checkout', auth, async(req, res) => {
+router.post('/user/checkout', auth, async (req, res) => {
   const User = req.user;
-
 });
 
 module.exports = router;
