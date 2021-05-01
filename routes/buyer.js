@@ -12,7 +12,6 @@ router.get('/searchShops', async function (req, res) {
   let shops = await Shop.find({shopName: { "$regex": item , "$options": "i"}});
   res.status(200).json({
     status: 'success',
-    value,
     data:{
       shopData: {
         length: shops.length, 
