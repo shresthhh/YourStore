@@ -8,17 +8,20 @@ var ObjectId = require('mongoose').Types.ObjectId;
 router.get('/searchShops', async function (req, res) {
   const item = req.query.search;
   let value = "item";
-  let shops = await Shop.find({items:  { $elemMatch: {itemName: { "$regex": item , "$options": "i"}}}});
-  if (shops.length==0){
-    value = "shop"
-    shops = await Shop.find({shopName: item});
-  }
+  let items = await Shop.find({items:  { $elemMatch: {itemName: { "$regex": item , "$options": "i"}}}});
+  let shops = await Shop.find({shopName: { "$regex": item , "$options": "i"}});
   res.status(200).json({
     status: 'success',
     value,
     data:{
-      length: shops.length,
-      shops
+      shopData: {
+        length: shops.length, 
+        shops
+      },
+      itemsData: {
+        length: items.length,
+        items
+      }
     }
   })
 });
