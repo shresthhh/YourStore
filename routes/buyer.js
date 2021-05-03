@@ -7,22 +7,24 @@ var ObjectId = require('mongoose').Types.ObjectId;
 
 router.get('/searchShops', async function (req, res) {
   const item = req.query.search;
-  let value = "item";
-  let items = await Shop.find({items:  { $elemMatch: {itemName: { "$regex": item , "$options": "i"}}}});
-  let shops = await Shop.find({shopName: { "$regex": item , "$options": "i"}});
+  let value = 'item';
+  let items = await Shop.find({
+    items: { $elemMatch: { itemName: { $regex: item, $options: 'i' } } },
+  });
+  let shops = await Shop.find({ shopName: { $regex: item, $options: 'i' } });
   res.status(200).json({
     status: 'success',
-    data:{
+    data: {
       shopData: {
-        length: shops.length, 
-        shops
+        length: shops.length,
+        shops,
       },
       itemsData: {
         length: items.length,
-        items
-      }
-    }
-  })
+        items,
+      },
+    },
+  });
 });
 
 router.post('/user/signup', async (req, res) => {
@@ -184,7 +186,15 @@ router.post('/user/addWishlist/:id', auth, async (req, res) => {
 });
 
 router.post('/user/checkout', auth, async (req, res) => {
-  const User = req.user;
+  try {
+    const User = req.user;
+    User.OrderHistory.push(...User.cart);
+    User.cart = [];
+    await User.save();
+    res.status(200).send(User);
+  } catch (e) {
+    res.status(400).send(e);
+  }
 });
 
 module.exports = router;
