@@ -1,19 +1,19 @@
-const mongoose = require("mongoose");
-const validator = require("validator");
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcryptjs");
+const mongoose = require('mongoose');
+const validator = require('validator');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 
-const Item = require("./itemModel");
-const ItemSchema = mongoose.model("Item").schema;
+const Item = require('./itemModel');
+const ItemSchema = mongoose.model('Item').schema;
 
 const GeoSchema = new mongoose.Schema({
   type: {
     type: String,
-    default: "Point",
+    default: 'Point',
   },
   coordinates: {
     type: [Number],
-    index: "2dsphere",
+    index: '2dsphere',
   },
 });
 
@@ -28,7 +28,7 @@ const shopSchema = new mongoose.Schema({
     trim: true,
     required: true,
   },
-  geometry: GeoSchema,
+  // geometry: GeoSchema,
   email: {
     type: String,
     trim: true,
@@ -37,7 +37,7 @@ const shopSchema = new mongoose.Schema({
     unique: true,
     validate(value) {
       if (!validator.isEmail(value)) {
-        throw new Error("Invalid Email");
+        throw new Error('Invalid Email');
       }
     },
   },
@@ -69,6 +69,17 @@ const shopSchema = new mongoose.Schema({
       required: true,
     },
   ],
+  location: {
+    //GeoJSON
+    type: {
+      type: String,
+      default: 'Point',
+      enum: ['Point'],
+    },
+    coordinates: [Number], //[long, lat]
+    address: String,
+    description: String,
+  },
   tokens: [
     {
       token: {
@@ -79,9 +90,12 @@ const shopSchema = new mongoose.Schema({
   ],
 });
 
+shopSchema.index({location: '2dsphere'});
+
+
 shopSchema.methods.generateAuthToken = async function () {
   const store = this;
-  const token = jwt.sign({ _id: store._id.toString() }, "NarutoIsAmazing");
+  const token = jwt.sign({ _id: store._id.toString() }, 'NarutoIsAmazing');
 
   store.tokens = store.tokens.concat({ token });
   await store.save();
@@ -92,24 +106,24 @@ shopSchema.methods.generateAuthToken = async function () {
 shopSchema.statics.findByCredentials = async (email, password) => {
   const store = await Shop.findOne({ email });
   if (!store) {
-    throw new Error("Unable to login");
+    throw new Error('Unable to login');
   }
 
   const isMatch = await bcrypt.compare(password, store.password);
   if (!isMatch) {
-    throw new Error("Invalid Credentials");
+    throw new Error('Invalid Credentials');
   }
 
   return store;
 };
 
-shopSchema.pre("save", async function (next) {
+shopSchema.pre('save', async function (next) {
   const shop = this;
-  if (shop.isModified("password")) {
+  if (shop.isModified('password')) {
     shop.password = await bcrypt.hash(shop.password, 8);
   }
   next();
 });
 
-const Shop = mongoose.model("Shop", shopSchema);
+const Shop = mongoose.model('Shop', shopSchema);
 module.exports = Shop;

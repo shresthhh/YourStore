@@ -197,4 +197,33 @@ router.post('/user/checkout', auth, async (req, res) => {
   }
 });
 
+//  /shops-within/233/center/-40,45
+router.get(
+  '/shops-within/:distance/center/:latlng/',
+  auth,
+  async (req, res) => {
+    try {
+      const { distance, latlng, unit } = req.params;
+      const [lat, lng] = latlng.split(',');
+      const radius = distance/6378.1; //in km
+      if (!lat || !lng) {
+        throw new Error('Location points not given properly');
+      }
+      const shops = await Shop.find({
+        location: { $geoWithin: { $centerSphere: [[lng, lat], radius] } },
+      });
+      res.status(200).json({
+        status: 'success',
+        results: shops.length,
+        data: {
+          data: shops,
+        },
+      });
+    } catch (e) {
+      console.log(e);
+      res.status(400).send(e);
+    }
+  }
+);
+
 module.exports = router;
