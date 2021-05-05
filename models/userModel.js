@@ -6,12 +6,7 @@ const Item = require('./itemModel');
 const ItemSchema = mongoose.model('Item').schema;
 
 const userSchema = new mongoose.Schema({
-  fname: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-  lname: {
+  name: {
     type: String,
     required: true,
     trim: true,
@@ -37,10 +32,6 @@ const userSchema = new mongoose.Schema({
   gender: {
     type: String,
     enum: ['m', 'f', 'o'],
-    required: true,
-  },
-  dob: {
-    type: Date,
     required: true,
   },
   age: {
