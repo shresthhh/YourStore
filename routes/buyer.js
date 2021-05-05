@@ -7,7 +7,6 @@ var ObjectId = require('mongoose').Types.ObjectId;
 
 router.get('/searchShops', async function (req, res) {
   const item = req.query.search;
-  let value = 'item';
   let items = await Shop.find({
     items: { $elemMatch: { itemName: { $regex: item, $options: 'i' } } },
   });
