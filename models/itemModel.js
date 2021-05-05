@@ -30,6 +30,9 @@ const itemSchema = new mongoose.Schema({
     type: String, 
     trim: true, 
     enum: ['Fruits', 'Vegetables', 'Meat', 'Dairy', 'Beverages', 'Drinks'],
+  },
+  shopID: {
+    type: mongoose.Schema.Types.ObjectId,
   }
 });
 
