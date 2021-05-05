@@ -47,6 +47,10 @@ const shopSchema = new mongoose.Schema({
     trim: true,
     min: 6,
   },
+  shopRating: {
+    type: Number,
+    default: 5
+  },
   phone: {
     type: Number,
     required: true,
@@ -56,6 +60,18 @@ const shopSchema = new mongoose.Schema({
     type: String,
     trim: true,
     required: true,
+  },
+  profitsDaily: {
+    type: Number,
+    default: 0,
+  },
+  porfitsYearly: {
+    type: Number,
+    default: 0,
+  },
+  profitsMonthly: {
+    type: Number,
+    default: 0,
   },
   items: [
     {
@@ -90,8 +106,7 @@ const shopSchema = new mongoose.Schema({
   ],
 });
 
-shopSchema.index({location: '2dsphere'});
-
+shopSchema.index({ location: '2dsphere' });
 
 shopSchema.methods.generateAuthToken = async function () {
   const store = this;
