@@ -7,6 +7,10 @@ const itemSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
+  sellCount:{
+    type: Number,
+    default: 0
+  },
   itemDesc: {
     type: String,
     required: true,
@@ -30,9 +34,11 @@ const itemSchema = new mongoose.Schema({
     type: String, 
     trim: true, 
     enum: ['Fruits', 'Vegetables', 'Meat', 'Dairy', 'Beverages', 'Drinks'],
+    required: true,
   },
   shopID: {
     type: mongoose.Schema.Types.ObjectId,
+    required: true,
   }
 });
 
