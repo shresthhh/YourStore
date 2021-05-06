@@ -114,16 +114,12 @@ router.post('/user/cart/increase/:id/:quantity', auth, async (req, res) => {
       items: { $elemMatch: { _id: new ObjectId(req.params.id) } },
     });
     shop.items.forEach((item, index) => {
-      if (
-        item._id == req.params.id &&
-        item.quantity - req.params.quantity >= 0
-      ) 
-        User.cart.forEach(async(item) => {
+      if (item._id == req.params.id && item.quantity - req.params.quantity >= 0)
+        User.cart.forEach(async (item) => {
           item.quantity = item.quantity + parseInt(req.params.quantity);
           // if(item.quantity<=0)
           //  await User.updateOne({$pull: {"cart": {"_id" : req.params.id}}});
         });
-      
     });
     await User.save();
     res.status(200).send(User);
@@ -135,26 +131,22 @@ router.post('/user/cart/increase/:id/:quantity', auth, async (req, res) => {
 router.post('/user/addCart/:id/:quantity', auth, async (req, res) => {
   const User = req.user;
   let qty;
-  console.log(req.params.id, User.shopInCart)
   try {
     const shop = await Shop.findOne({
       items: { $elemMatch: { _id: new ObjectId(req.params.id) } },
     }); //change it to search with shop id and then compare each item with object id in request parameters
     shop.items.forEach((e, index) => {
       qty = e.quantity;
-      if (e._id == req.params.id ) {
-        if(User.shopInCart && e.shopID!=User.shopInCart)  throw "You can add items only from one shop!"
-        if(e.quantity - req.params.quantity >= 0)
-        {
+      if (e._id == req.params.id) {
+        if (User.shopInCart && e.shopID != User.shopInCart)
+          throw 'You can add items only from one shop!';
+        if (e.quantity - req.params.quantity >= 0) {
           item = e;
           item.quantity = req.params.quantity;
           User.cart = User.cart.concat(item);
           return;
-        }
-        else 
-        throw 'Item not in stock!';
-      } 
-     
+        } else throw 'Item not in stock!';
+      }
     });
     User.shopInCart = shop._id;
     await User.save();
@@ -204,10 +196,21 @@ router.post('/user/addWishlist/:id', auth, async (req, res) => {
 router.post('/user/checkout', auth, async (req, res) => {
   try {
     const User = req.user;
+    const Store = await Shop.findById(User.shopInCart);
+    User.cart.forEach((e) => {
+      Store.items.forEach((item) => {
+        if (JSON.stringify(item._id) == JSON.stringify(e._id)) {
+          console.log(1);
+          item.demand += 1;
+        }
+      });
+      e.status = 'TBD';
+    });
     User.OrderHistory.push(...User.cart);
     User.cart = [];
     User.shopInCart = undefined;
     await User.save();
+    await Store.save();
     res.status(200).send(User);
   } catch (e) {
     res.status(400).send(e);

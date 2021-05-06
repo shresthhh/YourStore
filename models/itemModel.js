@@ -7,7 +7,7 @@ const itemSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
-  sellCount:{
+  demand:{
     type: Number,
     default: 0
   },
@@ -35,6 +35,10 @@ const itemSchema = new mongoose.Schema({
     trim: true, 
     enum: ['Fruits', 'Vegetables', 'Meat', 'Dairy', 'Beverages', 'Drinks'],
     required: true,
+  },
+  status: {
+    type: String,
+    enum: ['TBD', 'Delivered']
   },
   shopID: {
     type: mongoose.Schema.Types.ObjectId,
