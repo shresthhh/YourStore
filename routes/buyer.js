@@ -206,6 +206,7 @@ router.post('/user/checkout', auth, async (req, res) => {
     const User = req.user;
     User.OrderHistory.push(...User.cart);
     User.cart = [];
+    User.shopInCart = undefined;
     await User.save();
     res.status(200).send(User);
   } catch (e) {
