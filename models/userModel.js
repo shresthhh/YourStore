@@ -42,6 +42,10 @@ const userSchema = new mongoose.Schema({
       if (value < 14) throw new Error('You are too young!');
     },
   },
+  shopInCart:{
+      type: mongoose.Schema.Types.ObjectId,
+      default: undefined
+  },
   profilePicture: {
     type: Buffer,
     // required: true,
