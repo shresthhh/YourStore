@@ -200,13 +200,13 @@ router.post('/user/checkout', auth, async (req, res) => {
     User.cart.forEach((e) => {
       Store.items.forEach((item) => {
         if (JSON.stringify(item._id) == JSON.stringify(e._id)) {
-          console.log(1);
           item.demand += 1;
         }
       });
       e.status = 'TBD';
     });
-    User.OrderHistory.push(...User.cart);
+    Store.delivery.push(...User.cart);
+    User.PendingOrders.push(...User.cart);
     User.cart = [];
     User.shopInCart = undefined;
     await User.save();
@@ -214,6 +214,24 @@ router.post('/user/checkout', auth, async (req, res) => {
     res.status(200).send(User);
   } catch (e) {
     res.status(400).send(e);
+  }
+});
+
+router.post('/user/delivered', auth, async (req, res) => {
+  try {
+    const User = req.user;
+    User.OrderHistory.push(...User.PendingOrders);
+    User.PendingOrders=[];
+    await User.save();
+    res.status(200).json({
+      status: success, 
+      User
+    })
+  }catch(e){
+    res.status(400).json({
+      status: 'fail',
+      message: e
+    })
   }
 });
 

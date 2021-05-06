@@ -67,6 +67,12 @@ const userSchema = new mongoose.Schema({
       required: true,
     },
   ],
+  PendingOrders: [
+    {
+      type: ItemSchema,
+      required: true,
+    },
+  ],
   OrderHistory: [
     {
       type: ItemSchema,
