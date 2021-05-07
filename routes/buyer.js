@@ -195,9 +195,11 @@ router.post('/user/addWishlist/:id', auth, async (req, res) => {
   }
 });
 
+//when user checksout, need total bill amount in request body
 router.post('/user/checkout', auth, async (req, res) => {
   try {
     const User = req.user;
+    const bill = req.body.cost;
     const Store = await Shop.findById(User.shopInCart);
     User.cart.forEach((e) => {
       Store.items.forEach((item) => {
@@ -219,6 +221,15 @@ router.post('/user/checkout', auth, async (req, res) => {
     User.PendingOrders.push(...User.cart);
     User.cart = [];
     User.shopInCart = undefined;
+    Store.profitsDaily = Store.profitsDaily + bill;
+    Store.profitsMonthly = Store.profitsMonthly + bill;
+    Store.profitsYearly = Store.profitsYearly + bill;
+    const payments = {
+      totalCost: bill,
+      date: new Date(Date.now()).toISOString(),
+      shopID: Store._id,
+    };
+    User.paymentHistory.push(payments);
     await User.save();
     await Store.save();
     res.status(200).send({
@@ -226,6 +237,21 @@ router.post('/user/checkout', auth, async (req, res) => {
     });
   } catch (e) {
     res.status(400).send(e);
+  }
+});
+
+router.get('/user/paymentHistory', auth, async (req, res) => {
+  try {
+    const payments = req.user.paymentHistory;
+    res.status(200).json({
+      status: 'success',
+      data: payments,
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: 'failure',
+      message: 'Could not retreive payments!',
+    });
   }
 });
 

@@ -42,9 +42,9 @@ const userSchema = new mongoose.Schema({
       if (value < 14) throw new Error('You are too young!');
     },
   },
-  shopInCart:{
-      type: mongoose.Schema.Types.ObjectId,
-      default: undefined
+  shopInCart: {
+    type: mongoose.Schema.Types.ObjectId,
+    default: undefined,
   },
   profilePicture: {
     type: Buffer,
@@ -82,8 +82,22 @@ const userSchema = new mongoose.Schema({
   address: [
     {
       type: String,
-      trim: true, 
-    }
+      trim: true,
+    },
+  ],
+  paymentHistory: [
+    {
+      totalCost: {
+        type: Number,
+        trim: true,
+      },
+      date: {
+        type: Date,
+      },
+      shopID: {
+        type: mongoose.Schema.Types.ObjectId,
+      },
+    },
   ],
   tokens: [
     {
