@@ -33,7 +33,7 @@ const itemSchema = new mongoose.Schema({
   tags: {
     type: String, 
     trim: true, 
-    enum: ['Fruits', 'Vegetables', 'Meat', 'Dairy', 'Beverages', 'Drinks'],
+    enum: ['fruits', 'vegetables', 'meat', 'dairy', 'snacks', 'drinks'],
     required: true,
   },
   status: {
