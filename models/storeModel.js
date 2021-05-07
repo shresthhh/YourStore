@@ -79,6 +79,18 @@ const shopSchema = new mongoose.Schema({
       required: true,
     },
   ],
+  itemsDemanded: [{
+    name: {
+      type:String,
+      required:true
+    },
+    desc: {
+      type: String,
+    },
+    qty: {
+      type: Number,
+    }
+  }],
   delivery: [
     {
       user: {

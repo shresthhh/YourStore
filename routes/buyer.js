@@ -137,7 +137,10 @@ router.post('/user/addCart/:id/:quantity', auth, async (req, res) => {
     shop.items.forEach((e, index) => {
       qty = e.quantity;
       if (e._id == req.params.id) {
-        if (JSON.stringify(User.shopInCart) && JSON.stringify(e.shopID) != JSON.stringify((User.shopInCart)))
+        if (
+          JSON.stringify(User.shopInCart) &&
+          JSON.stringify(e.shopID) != JSON.stringify(User.shopInCart)
+        )
           throw 'You can add items only from one shop!';
         if (e.quantity - req.params.quantity >= 0) {
           item = e;
@@ -204,15 +207,13 @@ router.post('/user/checkout', auth, async (req, res) => {
       });
       e.status = 'TBD';
     });
-    const delivery = 
-      {
-        user: {
-          userID: req.user.id,
-          address: req.body.address,
-          items: [],
-        },
-      }
-    ;
+    const delivery = {
+      user: {
+        userID: req.user.id,
+        address: req.body.address,
+        items: [],
+      },
+    };
     delivery.user.items.push(...User.cart);
     Store.delivery.push(delivery);
     User.PendingOrders.push(...User.cart);
@@ -273,5 +274,27 @@ router.get(
     }
   }
 );
+
+router.post('/user/requestItem', auth, async (req, res) => {
+  try{
+    const stores = await Shop.find();
+    const check = await Shop.findOne({itemsDemanded: {$elemMatch: { name: req.body.name}}});
+    if(check) throw "This item has already been requested!"
+    stores.forEach(async (store) => {
+      store.itemsDemanded.push(req.body);
+      await store.save();
+    });
+    res.status(201).send({
+      status: 'success',
+      message:
+        'Items requested were successfully broadcasted to nearby shopkeepers!',
+    });
+  }catch(e){
+    res.status(400).send({
+      status: 'error',
+      message: e
+    })
+  }
+});
 
 module.exports = router;
