@@ -247,6 +247,21 @@ router.post('/user/delivered', auth, async (req, res) => {
   }
 });
 
+router.get('/shop', auth, async (req, res) => {
+  try {
+    const store = await Shop.findById(req.body.shopID);
+    res.status(200).json({
+      status: 'success',
+      data: store,
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: 'failure',
+      message: 'Could not retreive store!',
+    });
+  }
+});
+
 //  /shops-within/233/center/-40,45
 router.get(
   '/shops-within/:distance/center/:latlng/',
@@ -276,10 +291,12 @@ router.get(
 );
 
 router.post('/user/requestItem', auth, async (req, res) => {
-  try{
+  try {
     const stores = await Shop.find();
-    const check = await Shop.findOne({itemsDemanded: {$elemMatch: { name: req.body.name}}});
-    if(check) throw "This item has already been requested!"
+    const check = await Shop.findOne({
+      itemsDemanded: { $elemMatch: { name: req.body.name } },
+    });
+    if (check) throw 'This item has already been requested!';
     stores.forEach(async (store) => {
       store.itemsDemanded.push(req.body);
       await store.save();
@@ -289,11 +306,11 @@ router.post('/user/requestItem', auth, async (req, res) => {
       message:
         'Items requested were successfully broadcasted to nearby shopkeepers!',
     });
-  }catch(e){
+  } catch (e) {
     res.status(400).send({
       status: 'error',
-      message: e
-    })
+      message: e,
+    });
   }
 });
 
