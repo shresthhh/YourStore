@@ -49,7 +49,7 @@ const shopSchema = new mongoose.Schema({
   },
   shopRating: {
     type: Number,
-    default: 5
+    default: 5,
   },
   phone: {
     type: Number,
@@ -81,8 +81,20 @@ const shopSchema = new mongoose.Schema({
   ],
   delivery: [
     {
-      type: ItemSchema,
-      required: true,
+      user: {
+        userID: {
+          type: mongoose.Schema.Types.ObjectId,
+        },
+        address: {
+          type: String,
+          required: true,
+        },
+        items: [
+          {
+            type: ItemSchema,
+          }
+        ],
+      },
     },
   ],
   location: {

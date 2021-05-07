@@ -138,7 +138,8 @@ router.post('/user/addCart/:id/:quantity', auth, async (req, res) => {
     shop.items.forEach((e, index) => {
       qty = e.quantity;
       if (e._id == req.params.id) {
-        if (User.shopInCart && e.shopID != User.shopInCart)
+        console.log(User.shopInCart, e.shopID);
+        if (JSON.stringify(User.shopInCart) && JSON.stringify(e.shopID) != JSON.stringify((User.shopInCart)))
           throw 'You can add items only from one shop!';
         if (e.quantity - req.params.quantity >= 0) {
           item = e;
@@ -205,13 +206,25 @@ router.post('/user/checkout', auth, async (req, res) => {
       });
       e.status = 'TBD';
     });
-    Store.delivery.push(...User.cart);
+    const delivery = 
+      {
+        user: {
+          userID: req.user.id,
+          address: req.body.address,
+          items: [],
+        },
+      }
+    ;
+    delivery.user.items.push(...User.cart);
+    console.log(delivery);
+    Store.delivery.push(delivery);
+    console.log(Store.delivery);
     User.PendingOrders.push(...User.cart);
     User.cart = [];
     User.shopInCart = undefined;
     await User.save();
     await Store.save();
-    res.status(200).send(User);
+    res.status(200).send(delivery);
   } catch (e) {
     res.status(400).send(e);
   }
@@ -221,17 +234,17 @@ router.post('/user/delivered', auth, async (req, res) => {
   try {
     const User = req.user;
     User.OrderHistory.push(...User.PendingOrders);
-    User.PendingOrders=[];
+    User.PendingOrders = [];
     await User.save();
     res.status(200).json({
-      status: success, 
-      User
-    })
-  }catch(e){
+      status: success,
+      User,
+    });
+  } catch (e) {
     res.status(400).json({
       status: 'fail',
-      message: e
-    })
+      message: e,
+    });
   }
 });
 
