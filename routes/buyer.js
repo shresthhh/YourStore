@@ -87,7 +87,6 @@ router.post('/users/me/addAddress', auth, async (req, res) => {
   } else {
     try {
       User.address = User.address.concat(req.body.address);
-      console.log(User.address);
       await User.save();
       res.status(201).json({
         status: 'success',
@@ -138,7 +137,6 @@ router.post('/user/addCart/:id/:quantity', auth, async (req, res) => {
     shop.items.forEach((e, index) => {
       qty = e.quantity;
       if (e._id == req.params.id) {
-        console.log(User.shopInCart, e.shopID);
         if (JSON.stringify(User.shopInCart) && JSON.stringify(e.shopID) != JSON.stringify((User.shopInCart)))
           throw 'You can add items only from one shop!';
         if (e.quantity - req.params.quantity >= 0) {
@@ -216,15 +214,15 @@ router.post('/user/checkout', auth, async (req, res) => {
       }
     ;
     delivery.user.items.push(...User.cart);
-    console.log(delivery);
     Store.delivery.push(delivery);
-    console.log(Store.delivery);
     User.PendingOrders.push(...User.cart);
     User.cart = [];
     User.shopInCart = undefined;
     await User.save();
     await Store.save();
-    res.status(200).send(delivery);
+    res.status(200).send({
+      status: 'success',
+    });
   } catch (e) {
     res.status(400).send(e);
   }
@@ -271,7 +269,6 @@ router.get(
         },
       });
     } catch (e) {
-      console.log(e);
       res.status(400).send(e);
     }
   }
