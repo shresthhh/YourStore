@@ -69,14 +69,40 @@ const userSchema = new mongoose.Schema({
   ],
   PendingOrders: [
     {
-      type: ItemSchema,
-      required: true,
+      _id: false,
+      order: {
+        shopID: {
+          type: mongoose.Schema.Types.ObjectId,
+        },
+        address: {
+          type: String,
+          required: true,
+        },
+        items: [
+          {
+            type: ItemSchema,
+          }
+        ],
+      },
     },
   ],
   OrderHistory: [
     {
-      type: ItemSchema,
-      required: true,
+       _id: false,
+      order: {
+        shopID: {
+          type: mongoose.Schema.Types.ObjectId,
+        },
+        address: {
+          type: String,
+          required: true,
+        },
+        items: [
+          {
+            type: ItemSchema,
+          }
+        ],
+      },
     },
   ],
   address: [
@@ -87,6 +113,7 @@ const userSchema = new mongoose.Schema({
   ],
   paymentHistory: [
     {
+      _id: false,
       totalCost: {
         type: Number,
         trim: true,

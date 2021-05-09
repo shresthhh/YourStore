@@ -93,6 +93,26 @@ const shopSchema = new mongoose.Schema({
   }],
   delivery: [
     {
+      _id: false,
+      user: {
+        userID: {
+          type: mongoose.Schema.Types.ObjectId,
+        },
+        address: {
+          type: String,
+          required: true,
+        },
+        items: [
+          {
+            type: ItemSchema,
+          }
+        ],
+      },
+    },
+  ],
+  deliveryHistory: [
+    {
+      _id: false,
       user: {
         userID: {
           type: mongoose.Schema.Types.ObjectId,

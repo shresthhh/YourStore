@@ -216,9 +216,17 @@ router.post('/user/checkout', auth, async (req, res) => {
         items: [],
       },
     };
+    const Order = {
+      order: {
+        shopID: Store._id,
+        address: req.body.address,
+        items: [],
+      },
+    };
     delivery.user.items.push(...User.cart);
     Store.delivery.push(delivery);
-    User.PendingOrders.push(...User.cart);
+    Order.order.items.push(...User.cart);
+    User.PendingOrders.push(Order);
     User.cart = [];
     User.shopInCart = undefined;
     Store.profitsDaily = Store.profitsDaily + bill;
@@ -234,6 +242,7 @@ router.post('/user/checkout', auth, async (req, res) => {
     await Store.save();
     res.status(200).send({
       status: 'success',
+      order: Order
     });
   } catch (e) {
     res.status(400).send(e);
@@ -251,24 +260,6 @@ router.get('/user/paymentHistory', auth, async (req, res) => {
     res.status(400).json({
       status: 'failure',
       message: 'Could not retreive payments!',
-    });
-  }
-});
-
-router.post('/user/delivered', auth, async (req, res) => {
-  try {
-    const User = req.user;
-    User.OrderHistory.push(...User.PendingOrders);
-    User.PendingOrders = [];
-    await User.save();
-    res.status(200).json({
-      status: success,
-      User,
-    });
-  } catch (e) {
-    res.status(400).json({
-      status: 'fail',
-      message: e,
     });
   }
 });
