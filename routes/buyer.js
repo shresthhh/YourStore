@@ -218,6 +218,7 @@ router.post('/user/checkout', auth, async (req, res) => {
     };
     const Order = {
       order: {
+        totalCost: bill,
         shopID: Store._id,
         address: req.body.address,
         items: [],

@@ -69,7 +69,9 @@ const userSchema = new mongoose.Schema({
   ],
   PendingOrders: [
     {
-      _id: false,
+      totalCost: {
+        type:Number
+      },
       order: {
         shopID: {
           type: mongoose.Schema.Types.ObjectId,
@@ -88,7 +90,9 @@ const userSchema = new mongoose.Schema({
   ],
   OrderHistory: [
     {
-       _id: false,
+      totalCost: {
+        type:Number
+      },
       order: {
         shopID: {
           type: mongoose.Schema.Types.ObjectId,

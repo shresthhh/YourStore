@@ -1,9 +1,11 @@
 const express = require('express');
-const Shop = require('../models/storeModel');
+const Shop = require('./../models/storeModel');
 const Item = require('./../models/itemModel');
+const User = require('./../models/userModel');
 const router = new express.Router();
 const auth = require('../middleware/storeAuth');
 var ObjectId = require('mongoose').Types.ObjectId;
+const mongoose = require('mongoose');
 
 router.post('/store/register', async (req, res) => {
   const newStore = new Shop(req.body);
@@ -29,7 +31,11 @@ router.post('/store/login', async (req, res) => {
       req.body.password
     );
     const token = await store.generateAuthToken();
-    res.status(200).json(store);
+    res.status(200).json({
+      data: {
+        Shop: store,
+      },
+    });
   } catch (e) {
     res.status(400).send(e);
   }
@@ -103,6 +109,35 @@ router.get('/myProducts', auth, async (req, res) => {
     } catch (e) {
       res.status(400).send(e);
     }
+  }
+});
+
+router.post('/store/delivered', auth, async (req, res) => {
+  try {
+    const reqOrder = req.body.orderID;
+    const store = req.store;
+    const user = await User.findById(req.body.userID);
+    user.PendingOrders.forEach((order) => {
+      if (order._id.toString() == reqOrder) {
+        user.OrderHistory.push(order);
+        user.PendingOrders.pull(order._id);
+        store.delivery.forEarch((deliverable) => {
+          if(deliverable.user.userID.equals(user._id))
+            store.deliveryHistory.push(deliverable);
+        });
+        store.delivery.pull(user._id)
+        
+      }
+    });
+    await user.save();
+    res.status(200).json({
+      status: 'success',
+    });
+  } catch (e) {
+    res.status(400).json({
+      status: 'fail',
+      message: e.message,
+    });
   }
 });
 
