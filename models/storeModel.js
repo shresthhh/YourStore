@@ -65,7 +65,7 @@ const shopSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
-  porfitsYearly: {
+  profitsYearly: {
     type: Number,
     default: 0,
   },
@@ -111,7 +111,6 @@ const shopSchema = new mongoose.Schema({
   ],
   deliveryHistory: [
     {
-      _id: false,
       user: {
         userID: {
           type: mongoose.Schema.Types.ObjectId,

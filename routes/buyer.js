@@ -131,7 +131,10 @@ router.post('/user/cart/increase/:id/:quantity', auth, async (req, res) => {
       if (item._id == req.params.id && item.quantity - req.params.quantity >= 0)
         User.cart.forEach(async (item) => {
           item.quantity = item.quantity + parseInt(req.params.quantity);
-          if (item.quantity <= 0) User.cart.pull(req.params.id);
+          if (item.quantity <= 0) {
+            User.cart.pull(req.params.id);
+            User.shopInCart = undefined;
+          }
         });
     });
     await User.save();
@@ -154,6 +157,7 @@ router.post('/user/addCart/:id/:quantity', auth, async (req, res) => {
     shop.items.forEach((e, index) => {
       qty = e.quantity;
       if (e._id == req.params.id) {
+        console.log(e.shopID, User.shopInCart);
         if (
           JSON.stringify(User.shopInCart) &&
           JSON.stringify(e.shopID) != JSON.stringify(User.shopInCart)
@@ -173,7 +177,7 @@ router.post('/user/addCart/:id/:quantity', auth, async (req, res) => {
   } catch (e) {
     res.status(400).json({
       status: 'failed',
-      error: e.message,
+      error: e.message || e,
       quantity: qty,
     });
   }
