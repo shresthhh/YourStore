@@ -131,8 +131,8 @@ router.post('/user/cart/increase/:id/:quantity', auth, async (req, res) => {
       if (item._id == req.params.id && item.quantity - req.params.quantity >= 0)
         User.cart.forEach(async (item) => {
           item.quantity = item.quantity + parseInt(req.params.quantity);
-          // if(item.quantity<=0)
-          //  await User.updateOne({$pull: {"cart": {"_id" : req.params.id}}});
+          if(item.quantity<=0)
+            User.cart.pull(req.params.id);
         });
     });
     await User.save();
