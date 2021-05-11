@@ -174,7 +174,7 @@ router.post('/user/addCart/:id/:quantity', auth, async (req, res) => {
     res.status(200).send(User);
   } catch (e) {
     res.status(400).json({
-      status: 'failed',
+      status: 'failure',
       error: e.message || e,
       quantity: qty,
     });
@@ -357,7 +357,7 @@ router.post('/user/requestItem', auth, async (req, res) => {
     });
   } catch (e) {
     res.status(400).send({
-      status: 'error',
+      status: 'failure',
       error: e,
     });
   }
