@@ -228,6 +228,9 @@ router.post('/user/checkout', auth, async (req, res) => {
       Store.items.forEach((item) => {
         if (JSON.stringify(item._id) == JSON.stringify(e._id)) {
           item.demand += 1;
+          if (item.quantity <= e.quantity)
+            throw 'Not sufficient item! ' + item.itemName + ' not in stock';
+          item.quantity -= e.quantity;
         }
       });
       e.status = 'TBD';
@@ -273,7 +276,7 @@ router.post('/user/checkout', auth, async (req, res) => {
   } catch (e) {
     res.status(400).json({
       status: 'failure',
-      error: e.message,
+      error: e.message || e,
     });
   }
 });
@@ -318,7 +321,7 @@ router.get(
       const [lat, lng] = latlng.split(',');
       const radius = distance / 6378.1; //in km
       if (!lat || !lng) {
-        throw new Error('Location points not given properly');
+        throw 'Location points not given properly';
       }
       const shops = await Shop.find({
         location: { $geoWithin: { $centerSphere: [[lng, lat], radius] } },
