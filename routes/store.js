@@ -122,11 +122,10 @@ router.post('/store/delivered', auth, async (req, res) => {
         user.OrderHistory.push(order);
         user.PendingOrders.pull(order._id);
         store.delivery.forEarch((deliverable) => {
-          if(deliverable.user.userID.equals(user._id))
+          if (deliverable.user.userID.equals(user._id))
             store.deliveryHistory.push(deliverable);
         });
-        store.delivery.pull(user._id)
-        
+        store.delivery.pull(user._id);
       }
     });
     await user.save();
