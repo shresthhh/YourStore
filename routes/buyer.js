@@ -40,7 +40,7 @@ router.post('/user/signup', async (req, res) => {
   } catch (e) {
     res.status(400).json({
       status: 'failure',
-      error: e.message,
+      error: e.message || e,
     });
   }
 });
@@ -56,7 +56,7 @@ router.post('/user/login', async (req, res) => {
   } catch (e) {
     res.status(400).json({
       status: 'failure',
-      error: e.message,
+      error: e.message || e,
     });
   }
 });
@@ -73,7 +73,7 @@ router.post('/user/logout', auth, async (req, res) => {
   } catch (e) {
     res.status(500).json({
       status: 'failure',
-      error: e.message,
+      error: e.message || e,
     });
   }
 });
@@ -86,7 +86,7 @@ router.post('/user/logoutAll', auth, async (req, res) => {
   } catch (e) {
     res.status(500).json({
       status: 'failure',
-      error: e.message,
+      error: e.message || e,
     });
   }
 });
@@ -106,7 +106,7 @@ router.post('/users/me/addAddress', auth, async (req, res) => {
     } catch (e) {
       res.status(400).json({
         status: 'failure',
-        error: e.message,
+        error: e.message || e,
       });
     }
   }
@@ -141,7 +141,7 @@ router.post('/user/cart/increase/:id/:quantity', auth, async (req, res) => {
   } catch (e) {
     res.status(400).json({
       status: 'failure',
-      error: e.message,
+      error: e.message || e,
     });
   }
 });
@@ -212,7 +212,7 @@ router.post('/user/addWishlist/:id', auth, async (req, res) => {
   } catch (e) {
     res.status(400).json({
       status: 'failure',
-      error: e.message,
+      error: e.message || e,
     });
   }
 });
@@ -285,10 +285,10 @@ router.get('/user/paymentHistory', auth, async (req, res) => {
       status: 'success',
       data: payments,
     });
-  } catch (err) {
+  } catch (e) {
     res.status(400).json({
       status: 'failure',
-      error: 'Could not retreive payments!',
+      error: 'Could not retreive payments!' || e,
     });
   }
 });
@@ -300,10 +300,10 @@ router.get('/shop', auth, async (req, res) => {
       status: 'success',
       data: store,
     });
-  } catch (err) {
+  } catch (e) {
     res.status(400).json({
       status: 'failure',
-      error: 'Could not retreive store!',
+      error: 'Could not retreive store!' || e,
     });
   }
 });
@@ -333,7 +333,7 @@ router.get(
     } catch (e) {
       res.status(400).json({
         status: 'failure',
-        error: e.message,
+        error: e.message || e,
       });
     }
   }
@@ -358,7 +358,7 @@ router.post('/user/requestItem', auth, async (req, res) => {
   } catch (e) {
     res.status(400).send({
       status: 'failure',
-      error: e,
+      error: e || e.message,
     });
   }
 });

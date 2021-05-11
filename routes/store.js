@@ -20,7 +20,10 @@ router.post('/store/register', async (req, res) => {
       },
     });
   } catch (e) {
-    res.status(400).send(e);
+    res.status(400).send({
+      status: 'failure',
+      error: e.message || e,
+    });
   }
 });
 
@@ -37,7 +40,10 @@ router.post('/store/login', async (req, res) => {
       },
     });
   } catch (e) {
-    res.status(400).send(e);
+    res.status(400).send({
+      status: 'failure',
+      error: e.message || e,
+    });
   }
 });
 
@@ -50,7 +56,10 @@ router.post('/store/logout', auth, async (req, res) => {
     await req.store.save();
     res.status(200).send('Logged out successfully');
   } catch (e) {
-    res.status(500).send(e);
+    res.status(500).send({
+      status: 'failure',
+      error: e.message || e,
+    });
   }
 });
 
@@ -60,7 +69,10 @@ router.post('/store/logoutAll', auth, async (req, res) => {
     req.store.save();
     res.status(200).send('Logged out from all devices');
   } catch (e) {
-    res.status(500).send(e);
+    res.status(500).send({
+      status: 'failure',
+      error: e.message || e,
+    });
   }
 });
 
@@ -72,7 +84,10 @@ router.post('/myStore/addItem', auth, async (req, res) => {
     await store.save();
     res.status(200).send(store);
   } catch (e) {
-    res.status(400).send(e);
+    res.status(400).send({
+      status: 'failure',
+      error: e.message || e,
+    });
   }
 });
 
@@ -84,7 +99,10 @@ router.post('/myStore/itemsToDeliver', auth, async (req, res) => {
     await store.save();
     res.status(200).send(store);
   } catch (e) {
-    res.status(400).send(e);
+    res.status(400).send({
+      status: 'failure',
+      error: e.message || e,
+    });
   }
 });
 
@@ -107,7 +125,10 @@ router.get('/myProducts', auth, async (req, res) => {
       });
       res.status(200).send(myProducts);
     } catch (e) {
-      res.status(400).send(e);
+      res.status(400).send({
+        status: 'failure',
+        error: e.message || e,
+      });
     }
   }
 });
@@ -137,7 +158,7 @@ router.post('/store/delivered', auth, async (req, res) => {
   } catch (e) {
     res.status(400).json({
       status: 'fail',
-      message: e.message,
+      message: e.message || e,
     });
   }
 });
@@ -162,8 +183,10 @@ router.patch('/myProducts/:id', auth, async (req, res) => {
     }
     res.status(200).send(product);
   } catch (e) {
-    console.log(e);
-    res.status(400).send(e);
+    res.status(400).send({
+      status: 'failure',
+      error: e.message || e,
+    });
   }
 });
 
