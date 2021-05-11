@@ -38,7 +38,10 @@ router.post('/user/signup', async (req, res) => {
       },
     });
   } catch (e) {
-    res.status(400).send(e);
+    res.status(400).json({
+      status: 'failure',
+      message: e.message,
+    });
   }
 });
 
@@ -51,7 +54,10 @@ router.post('/user/login', async (req, res) => {
     const token = await user.generateAuthToken();
     res.status(200).json(user);
   } catch (e) {
-    res.status(400).send(e);
+    res.status(400).json({
+      status: 'failure',
+      message: e.message,
+    });
   }
 });
 
@@ -65,7 +71,10 @@ router.post('/user/logout', auth, async (req, res) => {
 
     res.status(200).send('Logged out successfully');
   } catch (e) {
-    res.status(500).send(e);
+    res.status(500).json({
+      status: 'failure',
+      message: e.message,
+    });
   }
 });
 
@@ -75,7 +84,10 @@ router.post('/user/logoutAll', auth, async (req, res) => {
     await req.user.save();
     res.status(200).send('Logged out from all devices');
   } catch (e) {
-    res.status(500).send(e);
+    res.status(500).json({
+      status: 'failure',
+      message: e.message,
+    });
   }
 });
 
@@ -93,7 +105,10 @@ router.post('/users/me/addAddress', auth, async (req, res) => {
         User,
       });
     } catch (e) {
-      res.status(400).send(e);
+      res.status(400).json({
+        status: 'failure',
+        message: e.message,
+      });
     }
   }
 });
@@ -123,7 +138,10 @@ router.post('/user/cart/increase/:id/:quantity', auth, async (req, res) => {
     await User.save();
     res.status(200).send(User);
   } catch (e) {
-    res.status(400).send(e);
+    res.status(400).json({
+      status: 'failure',
+      message: e.message,
+    });
   }
 });
 
@@ -156,7 +174,7 @@ router.post('/user/addCart/:id/:quantity', auth, async (req, res) => {
   } catch (e) {
     res.status(400).json({
       status: 'failed',
-      error: e,
+      error: e.message,
       quantity: qty,
     });
   }
@@ -191,7 +209,10 @@ router.post('/user/addWishlist/:id', auth, async (req, res) => {
     await User.save();
     res.status(200).send(User);
   } catch (e) {
-    res.status(400).send(e);
+    res.status(400).json({
+      status: 'failure',
+      message: e.message,
+    });
   }
 });
 
@@ -201,6 +222,7 @@ router.post('/user/checkout', auth, async (req, res) => {
     const User = req.user;
     const bill = req.body.cost;
     const Store = await Shop.findById(User.shopInCart);
+    let uniqueID = new ObjectId(); //this is unique transaction ID used to distinguish orders
     User.cart.forEach((e) => {
       Store.items.forEach((item) => {
         if (JSON.stringify(item._id) == JSON.stringify(e._id)) {
@@ -210,6 +232,7 @@ router.post('/user/checkout', auth, async (req, res) => {
       e.status = 'TBD';
     });
     const delivery = {
+      _id: uniqueID,
       user: {
         userID: req.user.id,
         address: req.body.address,
@@ -217,6 +240,7 @@ router.post('/user/checkout', auth, async (req, res) => {
       },
     };
     const Order = {
+      _id: uniqueID,
       order: {
         totalCost: bill,
         shopID: Store._id,
@@ -246,7 +270,10 @@ router.post('/user/checkout', auth, async (req, res) => {
       order: Order
     });
   } catch (e) {
-    res.status(400).send(e);
+    res.status(400).json({
+      status: 'failure',
+      message: e.message,
+    });
   }
 });
 
@@ -303,7 +330,10 @@ router.get(
         },
       });
     } catch (e) {
-      res.status(400).send(e);
+      res.status(400).json({
+        status: 'failure',
+        message: e.message,
+      });
     }
   }
 );
