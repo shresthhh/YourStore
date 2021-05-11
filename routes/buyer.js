@@ -122,7 +122,7 @@ router.get('/users/me', auth, async (req, res) => {
 
 router.post('/user/cart/increase/:id/:quantity', auth, async (req, res) => {
   const User = req.user;
-  const qty = parseInt(req.params.quantity);
+  let qty = parseInt(req.params.quantity);
   try {
     const shop = await Shop.findOne({
       items: { $elemMatch: { _id: new ObjectId(req.params.id) } },
