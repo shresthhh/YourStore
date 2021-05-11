@@ -40,7 +40,7 @@ router.post('/user/signup', async (req, res) => {
   } catch (e) {
     res.status(400).json({
       status: 'failure',
-      message: e.message,
+      error: e.message,
     });
   }
 });
@@ -56,7 +56,7 @@ router.post('/user/login', async (req, res) => {
   } catch (e) {
     res.status(400).json({
       status: 'failure',
-      message: e.message,
+      error: e.message,
     });
   }
 });
@@ -73,7 +73,7 @@ router.post('/user/logout', auth, async (req, res) => {
   } catch (e) {
     res.status(500).json({
       status: 'failure',
-      message: e.message,
+      error: e.message,
     });
   }
 });
@@ -86,14 +86,13 @@ router.post('/user/logoutAll', auth, async (req, res) => {
   } catch (e) {
     res.status(500).json({
       status: 'failure',
-      message: e.message,
+      error: e.message,
     });
   }
 });
 
 router.post('/users/me/addAddress', auth, async (req, res) => {
   const User = req.user;
-  console.log(req.user);
   if (!req.user) {
     res.status(401).send('Login');
   } else {
@@ -107,7 +106,7 @@ router.post('/users/me/addAddress', auth, async (req, res) => {
     } catch (e) {
       res.status(400).json({
         status: 'failure',
-        message: e.message,
+        error: e.message,
       });
     }
   }
@@ -142,7 +141,7 @@ router.post('/user/cart/increase/:id/:quantity', auth, async (req, res) => {
   } catch (e) {
     res.status(400).json({
       status: 'failure',
-      message: e.message,
+      error: e.message,
     });
   }
 });
@@ -157,7 +156,6 @@ router.post('/user/addCart/:id/:quantity', auth, async (req, res) => {
     shop.items.forEach((e, index) => {
       qty = e.quantity;
       if (e._id == req.params.id) {
-        console.log(e.shopID, User.shopInCart);
         if (
           JSON.stringify(User.shopInCart) &&
           JSON.stringify(e.shopID) != JSON.stringify(User.shopInCart)
@@ -214,7 +212,7 @@ router.post('/user/addWishlist/:id', auth, async (req, res) => {
   } catch (e) {
     res.status(400).json({
       status: 'failure',
-      message: e.message,
+      error: e.message,
     });
   }
 });
@@ -275,7 +273,7 @@ router.post('/user/checkout', auth, async (req, res) => {
   } catch (e) {
     res.status(400).json({
       status: 'failure',
-      message: e.message,
+      error: e.message,
     });
   }
 });
@@ -290,7 +288,7 @@ router.get('/user/paymentHistory', auth, async (req, res) => {
   } catch (err) {
     res.status(400).json({
       status: 'failure',
-      message: 'Could not retreive payments!',
+      error: 'Could not retreive payments!',
     });
   }
 });
@@ -305,7 +303,7 @@ router.get('/shop', auth, async (req, res) => {
   } catch (err) {
     res.status(400).json({
       status: 'failure',
-      message: 'Could not retreive store!',
+      error: 'Could not retreive store!',
     });
   }
 });
@@ -335,7 +333,7 @@ router.get(
     } catch (e) {
       res.status(400).json({
         status: 'failure',
-        message: e.message,
+        error: e.message,
       });
     }
   }
@@ -360,7 +358,7 @@ router.post('/user/requestItem', auth, async (req, res) => {
   } catch (e) {
     res.status(400).send({
       status: 'error',
-      message: e,
+      error: e,
     });
   }
 });
