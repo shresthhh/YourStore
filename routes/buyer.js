@@ -122,15 +122,17 @@ router.get('/users/me', auth, async (req, res) => {
 
 router.post('/user/cart/increase/:id/:quantity', auth, async (req, res) => {
   const User = req.user;
+  const qty = parseInt(req.params.quantity);
   try {
     const shop = await Shop.findOne({
       items: { $elemMatch: { _id: new ObjectId(req.params.id) } },
     });
     shop.items.forEach((item, index) => {
-      if (item._id == req.params.id && item.quantity - req.params.quantity >= 0)
-        User.cart.forEach(async (item) => {
-          item.quantity = item.quantity + parseInt(req.params.quantity);
-          if (item.quantity <= 0) {
+      if (item._id == req.params.id && item.quantity - qty >= 0)
+        User.cart.forEach(async (userItem) => {
+          if(userItem.quantity+qty>item.quantity) qty = item.quantity-userItem.quantity;
+          userItem.quantity = userItem.quantity + parseInt(qty);
+          if (userItem.quantity <= 0) {
             User.cart.pull(req.params.id);
             User.shopInCart = undefined;
           }
@@ -228,7 +230,7 @@ router.post('/user/checkout', auth, async (req, res) => {
       Store.items.forEach((item) => {
         if (JSON.stringify(item._id) == JSON.stringify(e._id)) {
           item.demand += 1;
-          if (item.quantity <= e.quantity)
+          if (item.quantity < e.quantity)
             throw 'Not sufficient item! ' + item.itemName + ' not in stock';
           item.quantity -= e.quantity;
         }
