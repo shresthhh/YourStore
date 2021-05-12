@@ -16,6 +16,7 @@ router.post('/store/register', async (req, res) => {
     res.status(201).json({
       status: 'success',
       data: {
+        token,
         Shop: newStore,
       },
     });
@@ -36,6 +37,7 @@ router.post('/store/login', async (req, res) => {
     const token = await store.generateAuthToken();
     res.status(200).json({
       data: {
+        token,
         Shop: store,
       },
     });

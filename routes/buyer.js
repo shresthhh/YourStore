@@ -34,6 +34,7 @@ router.post('/user/signup', async (req, res) => {
     res.status(201).json({
       status: 'success',
       data: {
+        token,
         user: newUser,
       },
     });
@@ -52,7 +53,13 @@ router.post('/user/login', async (req, res) => {
       req.body.password
     );
     const token = await user.generateAuthToken();
-    res.status(200).json(user);
+    res.status(201).json({
+      status: 'success',
+      data: {
+        token,
+        user,
+      },
+    })
   } catch (e) {
     res.status(400).json({
       status: 'failure',
