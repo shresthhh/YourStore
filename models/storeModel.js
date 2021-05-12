@@ -136,7 +136,7 @@ const shopSchema = new mongoose.Schema({
     },
     coordinates: [Number], //[long, lat]
     address: String,
-    description: String,
+    landmark: String,
   },
   tokens: [
     {
