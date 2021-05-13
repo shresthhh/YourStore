@@ -116,6 +116,68 @@ router.get('/stores/myStore', auth, async (req, res) => {
   }
 });
 
+router.get('/store/Orders', auth, async (req, res) => {
+  if (!req.store) {
+    res.status(401).send('Login!');
+  } else {
+    const orders = [];
+    try {
+      req.store.delivery.forEach((item) => {
+        orders.push(item);
+      });
+      res.status(200).json({
+        status: 'success',
+        data: orders,
+      });
+    } catch (e) {
+      res.status(400).json({
+        status: 'fail',
+        message: e.message || e,
+      });
+    }
+  }
+});
+
+router.get('/store/OrderHistory', auth, async (req, res) => {
+  if (!req.store) {
+    res.status(401).send('Login!');
+  } else {
+    const orderHistory = [];
+    try {
+      req.store.deliveryHistory.forEach((item) => {
+        orderHistory.push(item);
+      });
+      res.status(200).json({
+        status: 'success',
+        data: orderHistory,
+      });
+    } catch (e) {
+      res.status(400).json({
+        status: 'fail',
+        message: e.message || e,
+      });
+    }
+  }
+});
+
+router.get('/store/requested', auth, async (req, res) => {
+  if (!req.store) {
+    res.status(401).send('Login!');
+  } else {
+    try{
+      res.status(200).json({
+        status: 'success',
+        data: req.store.itemsDemanded
+      });
+    } catch (e) {
+      res.status(400).json({
+        status: 'fail',
+        message: e.message || e,
+      });
+    }
+  }
+});
+
 router.get('/myProducts', auth, async (req, res) => {
   if (!req.store) {
     res.status(401).send('Login!');
@@ -145,7 +207,9 @@ router.post('/store/delivered', auth, async (req, res) => {
         user.OrderHistory.push(order);
         user.PendingOrders.pull(order._id);
         store.delivery.forEach((deliverable) => {
-          if (JSON.stringify(deliverable.user.userID) == JSON.stringify((user._id))){
+          if (
+            JSON.stringify(deliverable.user.userID) == JSON.stringify(user._id)
+          ) {
             store.deliveryHistory.push(deliverable);
           }
         });
