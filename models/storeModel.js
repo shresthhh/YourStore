@@ -2,6 +2,9 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const dotenv = require('dotenv');
+
+dotenv.config({ path: './config.env' });
 
 const Item = require('./itemModel');
 const ItemSchema = mongoose.model('Item').schema;
@@ -152,7 +155,7 @@ shopSchema.index({ location: '2dsphere' });
 
 shopSchema.methods.generateAuthToken = async function () {
   const store = this;
-  const token = jwt.sign({ _id: store._id.toString() }, 'NarutoIsAmazing');
+  const token = jwt.sign({ _id: store._id.toString() }, process.env.JWT_SECRET);
 
   store.tokens = store.tokens.concat({ token });
   await store.save();
