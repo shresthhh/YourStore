@@ -253,6 +253,9 @@ router.post('/user/checkout', auth, async (req, res) => {
       user: {
         userID: req.user.id,
         address: req.body.address,
+        name: req.user.name,
+        phone: req.user.phone,
+        email: req.user.email,
         items: [],
       },
     };

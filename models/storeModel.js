@@ -100,9 +100,21 @@ const shopSchema = new mongoose.Schema({
         userID: {
           type: mongoose.Schema.Types.ObjectId,
         },
+        name:{
+          type: String,
+          required: true,
+        },
         address: {
           type: String,
           required: true,
+        },
+        email: {
+          type: String,
+          required: true,
+        },
+        phone: {
+          type: Number,
+          required: true
         },
         items: [
           {
@@ -118,9 +130,21 @@ const shopSchema = new mongoose.Schema({
         userID: {
           type: mongoose.Schema.Types.ObjectId,
         },
+        name:{
+          type: String,
+          required: true,
+        },
         address: {
           type: String,
           required: true,
+        },
+        email: {
+          type: String,
+          required: true,
+        },
+        phone: {
+          type: Number,
+          required: true
         },
         items: [
           {
