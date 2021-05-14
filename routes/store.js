@@ -116,6 +116,25 @@ router.get('/stores/myStore', auth, async (req, res) => {
   }
 });
 
+router.get('/store/user', auth, async (req, res) => {
+  if (!req.store) {
+    res.status(401).send('Login!');
+  } else {
+    try {
+      const user = await User.findById(req.body.id);
+      res.status(200).json({
+        status: 'success',
+        data: user,
+      });
+    } catch (e) {
+      res.status(400).send({
+        status: 'failure',
+        error: e.message || e,
+      });
+    }
+  }
+});
+
 router.get('/store/Orders', auth, async (req, res) => {
   if (!req.store) {
     res.status(401).send('Login!');
@@ -164,10 +183,10 @@ router.get('/store/requested', auth, async (req, res) => {
   if (!req.store) {
     res.status(401).send('Login!');
   } else {
-    try{
+    try {
       res.status(200).json({
         status: 'success',
-        data: req.store.itemsDemanded
+        data: req.store.itemsDemanded,
       });
     } catch (e) {
       res.status(400).json({

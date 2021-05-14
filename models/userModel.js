@@ -50,7 +50,7 @@ const userSchema = new mongoose.Schema({
     default: undefined,
   },
   profilePicture: {
-    type: Buffer,
+    type: String,
     // required: true,
   },
   phone: {

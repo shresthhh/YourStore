@@ -4,7 +4,7 @@
   "description": "Software Project",
   "main": "index.js",
   "scripts": {
-    "start" : "node server.js"
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
@@ -25,6 +25,7 @@
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.11.15",
+    "multer": "^1.4.2",
     "validator": "^13.5.2"
   }
 }

@@ -1,9 +1,12 @@
 const express = require('express');
+const multer = require('multer');
 const User = require('./../models/userModel');
 const Shop = require('./../models/storeModel');
 const router = new express.Router();
 const auth = require('./../middleware/userAuth');
 var ObjectId = require('mongoose').Types.ObjectId;
+
+const upload = multer({ dest: 'public/img/users' });
 
 router.get('/searchShops', async function (req, res) {
   const item = req.query.search;
@@ -59,7 +62,7 @@ router.post('/user/login', async (req, res) => {
         token,
         user,
       },
-    })
+    });
   } catch (e) {
     res.status(400).json({
       status: 'failure',
@@ -137,7 +140,8 @@ router.post('/user/cart/increase/:id/:quantity', auth, async (req, res) => {
     shop.items.forEach((item, index) => {
       if (item._id == req.params.id && item.quantity - qty >= 0)
         User.cart.forEach(async (userItem) => {
-          if(userItem.quantity+qty>item.quantity) qty = item.quantity-userItem.quantity;
+          if (userItem.quantity + qty > item.quantity)
+            qty = item.quantity - userItem.quantity;
           userItem.quantity = userItem.quantity + parseInt(qty);
           if (userItem.quantity <= 0) {
             User.cart.pull(req.params.id);
