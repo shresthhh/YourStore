@@ -31,6 +31,14 @@ const shopSchema = new mongoose.Schema({
     trim: true,
     required: true,
   },
+  totalClicks:{
+    type: Number,
+    default: 0,
+  },
+  totalItemsSold:{
+    type: Number,
+    default: 0,
+  },
   // geometry: GeoSchema,
   email: {
     type: String,

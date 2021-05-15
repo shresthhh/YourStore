@@ -244,6 +244,7 @@ router.post('/user/checkout', auth, async (req, res) => {
           if (item.quantity < e.quantity)
             throw 'Not sufficient item! ' + item.itemName + ' not in stock';
           item.quantity -= e.quantity;
+          store.totalItemsSold+=1;
         }
       });
       e.status = 'TBD';
@@ -315,6 +316,8 @@ router.get('/user/paymentHistory', auth, async (req, res) => {
 router.get('/shop', auth, async (req, res) => {
   try {
     const store = await Shop.findById(req.body.shopID);
+    store.totalClicks+=1;
+    await store.save();
     res.status(200).json({
       status: 'success',
       data: store,
