@@ -56,7 +56,10 @@ router.post('/store/logout', auth, async (req, res) => {
     });
 
     await req.store.save();
-    res.status(200).send('Logged out successfully');
+    res.status(201).json({
+      status: 'success',
+      message: 'Logged out!',
+    });
   } catch (e) {
     res.status(500).send({
       status: 'failure',
@@ -69,7 +72,10 @@ router.post('/store/logoutAll', auth, async (req, res) => {
   try {
     req.store.tokens = [];
     req.store.save();
-    res.status(200).send('Logged out from all devices');
+    res.status(201).json({
+      status: 'success',
+      message: 'Logged out!',
+    });
   } catch (e) {
     res.status(500).send({
       status: 'failure',
