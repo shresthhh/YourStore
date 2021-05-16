@@ -79,10 +79,7 @@ router.post('/user/logout', auth, async (req, res) => {
 
     await req.user.save();
 
-    res.status(200).json({
-      status: 'success',
-      message: 'Logged out successfully!'
-    });
+    res.status(200).send('Logged out successfully');
   } catch (e) {
     res.status(500).json({
       status: 'failure',
@@ -95,10 +92,7 @@ router.post('/user/logoutAll', auth, async (req, res) => {
   try {
     req.user.tokens = [];
     await req.user.save();
-    res.status(200).json({
-      status: 'success',
-      message: 'Logged out all successfully!'
-    });
+    res.status(200).send('Logged out from all devices');
   } catch (e) {
     res.status(500).json({
       status: 'failure',
@@ -156,7 +150,7 @@ router.post('/user/cart/increase/:id/:quantity', auth, async (req, res) => {
         });
     });
     await User.save();
-    res.status(200).json({User});
+    res.status(200).send(User);
   } catch (e) {
     res.status(400).json({
       status: 'failure',
@@ -190,7 +184,7 @@ router.post('/user/addCart/:id/:quantity', auth, async (req, res) => {
     });
     User.shopInCart = shop._id;
     await User.save();
-    res.status(200).json({User});
+    res.status(200).send(User);
   } catch (e) {
     res.status(400).json({
       status: 'failure',
@@ -204,7 +198,7 @@ router.get('/user/Cart', auth, async (req, res) => {
   if (!req.user) {
     res.status(401).send('Login');
   } else {
-    res.status(201).json({req.user.cart});
+    res.status(201).send(req.user.cart);
   }
 });
 
@@ -212,7 +206,7 @@ router.get('/user/Wishlist', auth, async (req, res) => {
   if (!req.user) {
     res.status(401).send('Login');
   } else {
-    res.status(201).json({req.user.wishlist});
+    res.status(201).send(req.user.wishlist);
   }
 });
 
@@ -292,7 +286,7 @@ router.post('/user/checkout', auth, async (req, res) => {
     User.paymentHistory.push(payments);
     await User.save();
     await Store.save();
-    res.status(200).json({
+    res.status(200).send({
       status: 'success',
       order: Order,
     });
@@ -378,13 +372,13 @@ router.post('/user/requestItem', auth, async (req, res) => {
       store.itemsDemanded.push(req.body);
       await store.save();
     });
-    res.status(201).json({
+    res.status(201).send({
       status: 'success',
       message:
         'Items requested were successfully broadcasted to nearby shopkeepers!',
     });
   } catch (e) {
-    res.status(400).json({
+    res.status(400).send({
       status: 'failure',
       error: e || e.message,
     });
