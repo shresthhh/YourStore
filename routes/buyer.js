@@ -7,6 +7,14 @@ const auth = require('./../middleware/userAuth');
 var ObjectId = require('mongoose').Types.ObjectId;
 const UploadUserPhoto = require('./../middleware/userUpload');
 
+const filterObj = (obj, ...allowedFields) => {
+  const newObj = {};
+  Object.keys(obj).forEach(el => {
+    if (allowedFields.includes(el)) newObj[el] = obj[el];
+  });
+  return newObj;
+};
+
 router.get('/searchShops', async function (req, res) {
   const item = req.query.search;
   let items = await Shop.find({
@@ -100,7 +108,7 @@ router.post('/user/logoutAll', auth, async (req, res) => {
   }
 });
 
-router.post('/users/me/addAddress', auth, async (req, res) => {
+router.post('/user/me/addAddress', auth, async (req, res) => {
   const User = req.user;
   if (!req.user) {
     res.status(401).send('Login');
@@ -121,12 +129,43 @@ router.post('/users/me/addAddress', auth, async (req, res) => {
   }
 });
 
-router.get('/users/me', auth, async (req, res) => {
+router.get('/user/me', auth, async (req, res) => {
   if (!req.user) {
     res.status(401).send('Login');
   } else {
     res.status(201).send(req.user);
   }
+});
+
+router.patch('/user/me/update', auth, UploadUserPhoto, async (req, res, next) => {
+  try {
+
+    // const filteredBody = filterObj(req.body, 'name', 'email');
+    const updatedUser = await User.findByIdAndUpdate(req.user.id, req.body, {
+      new: true,
+      runValidators: true
+    });
+    res.status(200).json({
+      status: 'success',
+      data: {
+        user: updatedUser
+      }
+    })
+  } catch (e) {
+    res.status(400).json({
+      status: 'failure',
+      error: e.message || e,
+    });
+  }
+});
+
+router.delete('/user/delete', auth, async (req, res, next) => {
+  await User.findByIdAndUpdate(req.user.id, { active: false });
+
+  res.status(204).json({
+    status: 'success',
+    data: null
+  });
 });
 
 router.post('/user/cart/increase/:id/:quantity', auth, async (req, res) => {
@@ -243,7 +282,7 @@ router.post('/user/checkout', auth, async (req, res) => {
           if (item.quantity < e.quantity)
             throw 'Not sufficient item! ' + item.itemName + ' not in stock';
           item.quantity -= e.quantity;
-          Store.totalItemsSold+=1;
+          Store.totalItemsSold += 1;
         }
       });
       e.status = 'TBD';
@@ -315,7 +354,7 @@ router.get('/user/paymentHistory', auth, async (req, res) => {
 router.get('/shop', auth, async (req, res) => {
   try {
     const store = await Shop.findById(req.body.shopID);
-    store.totalClicks+=1;
+    store.totalClicks += 1;
     await store.save();
     res.status(200).json({
       status: 'success',
