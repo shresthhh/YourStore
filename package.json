@@ -4,7 +4,8 @@
   "description": "Software Project",
   "main": "index.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "debug": "ndb server.js"
   },
   "repository": {
     "type": "git",
