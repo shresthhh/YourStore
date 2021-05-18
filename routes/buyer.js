@@ -5,8 +5,7 @@ const Shop = require('./../models/storeModel');
 const router = new express.Router();
 const auth = require('./../middleware/userAuth');
 var ObjectId = require('mongoose').Types.ObjectId;
-
-const upload = multer({ dest: 'public/img/users' });
+const UploadUserPhoto = require('./../middleware/userUpload');
 
 router.get('/searchShops', async function (req, res) {
   const item = req.query.search;
@@ -244,7 +243,7 @@ router.post('/user/checkout', auth, async (req, res) => {
           if (item.quantity < e.quantity)
             throw 'Not sufficient item! ' + item.itemName + ' not in stock';
           item.quantity -= e.quantity;
-          store.totalItemsSold+=1;
+          Store.totalItemsSold+=1;
         }
       });
       e.status = 'TBD';
