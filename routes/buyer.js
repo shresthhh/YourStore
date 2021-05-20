@@ -9,7 +9,7 @@ const UploadUserPhoto = require('./../middleware/userUpload');
 
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
-  Object.keys(obj).forEach(el => {
+  Object.keys(obj).forEach((el) => {
     if (allowedFields.includes(el)) newObj[el] = obj[el];
   });
   return newObj;
@@ -137,34 +137,38 @@ router.get('/user/me', auth, async (req, res) => {
   }
 });
 
-router.patch('/user/me/update', auth, UploadUserPhoto, async (req, res, next) => {
-  try {
-
-    // const filteredBody = filterObj(req.body, 'name', 'email');
-    const updatedUser = await User.findByIdAndUpdate(req.user.id, req.body, {
-      new: true,
-      runValidators: true
-    });
-    res.status(200).json({
-      status: 'success',
-      data: {
-        user: updatedUser
-      }
-    })
-  } catch (e) {
-    res.status(400).json({
-      status: 'failure',
-      error: e.message || e,
-    });
+router.patch(
+  '/user/me/update',
+  auth,
+  UploadUserPhoto,
+  async (req, res, next) => {
+    try {
+      // const filteredBody = filterObj(req.body, 'name', 'email');
+      const updatedUser = await User.findByIdAndUpdate(req.user.id, req.body, {
+        new: true,
+        runValidators: true,
+      });
+      res.status(200).json({
+        status: 'success',
+        data: {
+          user: updatedUser,
+        },
+      });
+    } catch (e) {
+      res.status(400).json({
+        status: 'failure',
+        error: e.message || e,
+      });
+    }
   }
-});
+);
 
 router.delete('/user/delete', auth, async (req, res, next) => {
   await User.findByIdAndUpdate(req.user.id, { active: false });
 
   res.status(204).json({
     status: 'success',
-    data: null
+    data: null,
   });
 });
 
@@ -369,35 +373,31 @@ router.get('/shop', auth, async (req, res) => {
 });
 
 //  /shops-within/233/center/-40,45
-router.get(
-  '/shops-within/:distance/center/:latlng/',
-  auth,
-  async (req, res) => {
-    try {
-      const { distance, latlng, unit } = req.params;
-      const [lat, lng] = latlng.split(',');
-      const radius = distance / 6378.1; //in km
-      if (!lat || !lng) {
-        throw 'Location points not given properly';
-      }
-      const shops = await Shop.find({
-        location: { $geoWithin: { $centerSphere: [[lng, lat], radius] } },
-      });
-      res.status(200).json({
-        status: 'success',
-        results: shops.length,
-        data: {
-          data: shops,
-        },
-      });
-    } catch (e) {
-      res.status(400).json({
-        status: 'failure',
-        error: e.message || e,
-      });
+router.get('/shops-within/:distance/center/:latlng/', async (req, res) => {
+  try {
+    const { distance, latlng, unit } = req.params;
+    const [lat, lng] = latlng.split(',');
+    const radius = distance / 6378.1; //in km
+    if (!lat || !lng) {
+      throw 'Location points not given properly';
     }
+    const shops = await Shop.find({
+      location: { $geoWithin: { $centerSphere: [[lng, lat], radius] } },
+    });
+    res.status(200).json({
+      status: 'success',
+      results: shops.length,
+      data: {
+        data: shops,
+      },
+    });
+  } catch (e) {
+    res.status(400).json({
+      status: 'failure',
+      error: e.message || e,
+    });
   }
-);
+});
 
 router.post('/user/requestItem', auth, async (req, res) => {
   try {
