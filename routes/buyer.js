@@ -399,6 +399,29 @@ router.get('/shops-within/:distance/center/:latlng/', async (req, res) => {
   }
 });
 
+router.get('/searchItem', async (req, res) => {
+  const regex = new RegExp(`${req.query.search}`, 'i');
+  const items = [];
+  try {
+    const store = await Shop.findById(req.body.shopID);
+    if(!store) throw 'Store not found!'
+    store.items.forEach((item) => {
+      if (regex.test(item.itemName)) items.push(item);
+    });
+    if(items==null) throw 'No items matched!'
+    res.status(200).json({
+      status: 'success',
+      length: items.length,
+      items,
+    });
+  } catch (e) {
+    res.status(400).json({
+      status: 'failure',
+      error: e.message || e,
+    });
+  }
+});
+
 router.post('/user/requestItem', auth, async (req, res) => {
   try {
     const stores = await Shop.find();
