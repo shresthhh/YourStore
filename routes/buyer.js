@@ -355,9 +355,9 @@ router.get('/user/paymentHistory', auth, async (req, res) => {
   }
 });
 
-router.get('/shop', auth, async (req, res) => {
+router.get('/shop/:shopID', async (req, res) => {
   try {
-    const store = await Shop.findById(req.body.shopID);
+    const store = await Shop.findById(req.params.shopID);
     store.totalClicks += 1;
     await store.save();
     res.status(200).json({
@@ -404,11 +404,11 @@ router.get('/searchItem', async (req, res) => {
   const items = [];
   try {
     const store = await Shop.findById(req.body.shopID);
-    if(!store) throw 'Store not found!'
+    if (!store) throw 'Store not found!';
     store.items.forEach((item) => {
       if (regex.test(item.itemName)) items.push(item);
     });
-    if(items==null) throw 'No items matched!'
+    if (items == null) throw 'No items matched!';
     res.status(200).json({
       status: 'success',
       length: items.length,
