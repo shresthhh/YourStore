@@ -122,12 +122,12 @@ router.get('/stores/myStore', auth, async (req, res) => {
   }
 });
 
-router.get('/store/user', auth, async (req, res) => {
+router.get('/store/user/:id', auth, async (req, res) => {
   if (!req.store) {
     res.status(401).send('Login!');
   } else {
     try {
-      const user = await User.findById(req.body.id);
+      const user = await User.findById(req.params.id);
       res.status(200).json({
         status: 'success',
         data: user,
