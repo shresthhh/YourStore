@@ -283,6 +283,10 @@ router.post('/user/checkout', auth, async (req, res) => {
       Store.items.forEach((item) => {
         if (JSON.stringify(item._id) == JSON.stringify(e._id)) {
           item.demand += 1;
+          if (item.demand > Store.maxDemand) {
+            maxDemand = item.demand;
+            Store.trendingItem = item;
+          }
           if (item.quantity < e.quantity)
             throw 'Not sufficient item! ' + item.itemName + ' not in stock';
           item.quantity -= e.quantity;
@@ -332,6 +336,28 @@ router.post('/user/checkout', auth, async (req, res) => {
       status: 'success',
       order: Order,
     });
+  } catch (e) {
+    res.status(400).json({
+      status: 'failure',
+      error: e.message || e,
+    });
+  }
+});
+
+router.get('/trending', async (req, res, next) => {
+  try {
+    const stores = await Shop.find();
+    const trending = [];
+    if(stores == null) throw 'No shops were found!';
+    stores.forEach((store) => {
+      if(store.trendingItem!=null)
+      trending.push(store.trendingItem)
+    });
+    res.status(200).json({
+      status: 'success',
+      length: trending.length,
+      trending
+    })
   } catch (e) {
     res.status(400).json({
       status: 'failure',

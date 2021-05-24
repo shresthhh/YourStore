@@ -31,11 +31,11 @@ const shopSchema = new mongoose.Schema({
     trim: true,
     required: true,
   },
-  totalClicks:{
+  totalClicks: {
     type: Number,
     default: 0,
   },
-  totalItemsSold:{
+  totalItemsSold: {
     type: Number,
     default: 0,
   },
@@ -90,25 +90,34 @@ const shopSchema = new mongoose.Schema({
       required: true,
     },
   ],
-  itemsDemanded: [{
-    name: {
-      type:String,
-      required:true
+  trendingItem: {
+    type: ItemSchema,
+  },
+  maxDemand:{
+    type: Number,
+    default: 0,
+  },
+  itemsDemanded: [
+    {
+      name: {
+        type: String,
+        required: true,
+      },
+      desc: {
+        type: String,
+      },
+      qty: {
+        type: Number,
+      },
     },
-    desc: {
-      type: String,
-    },
-    qty: {
-      type: Number,
-    }
-  }],
+  ],
   delivery: [
     {
       user: {
         userID: {
           type: mongoose.Schema.Types.ObjectId,
         },
-        name:{
+        name: {
           type: String,
           required: true,
         },
@@ -122,12 +131,12 @@ const shopSchema = new mongoose.Schema({
         },
         phone: {
           type: Number,
-          required: true
+          required: true,
         },
         items: [
           {
             type: ItemSchema,
-          }
+          },
         ],
       },
     },
@@ -138,7 +147,7 @@ const shopSchema = new mongoose.Schema({
         userID: {
           type: mongoose.Schema.Types.ObjectId,
         },
-        name:{
+        name: {
           type: String,
           required: true,
         },
@@ -152,12 +161,12 @@ const shopSchema = new mongoose.Schema({
         },
         phone: {
           type: Number,
-          required: true
+          required: true,
         },
         items: [
           {
             type: ItemSchema,
-          }
+          },
         ],
       },
     },
