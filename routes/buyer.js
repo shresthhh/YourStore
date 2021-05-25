@@ -114,7 +114,6 @@ router.post('/user/me/addAddress', auth, async (req, res) => {
     location: req.body.address,
     type: req.body.type,
   };
-  console.log(address);
   if (!req.user) {
     res.status(401).send('Login');
   } else {
@@ -191,9 +190,10 @@ router.post('/user/cart/increase/:id/:quantity', auth, async (req, res) => {
             qty = item.quantity - userItem.quantity;
           if (userItem._id == req.params.id)
             userItem.quantity = userItem.quantity + parseInt(qty);
-          if (userItem.quantity <= 0) {
+          if (userItem.quantity <= 0 ) {
             User.cart.pull(req.params.id);
-            User.shopInCart = undefined;
+            if(User.cart.length==0)
+              User.shopInCart = undefined;
           }
         });
       }
