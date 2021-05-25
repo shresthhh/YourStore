@@ -110,11 +110,16 @@ router.post('/user/logoutAll', auth, async (req, res) => {
 
 router.post('/user/me/addAddress', auth, async (req, res) => {
   const User = req.user;
+  address = {
+    location: req.body.address,
+    type: req.body.type,
+  };
+  console.log(address);
   if (!req.user) {
     res.status(401).send('Login');
   } else {
     try {
-      User.address = User.address.concat(req.body.address);
+      User.address = User.address.concat(address);
       await User.save();
       res.status(201).json({
         status: 'success',
@@ -180,12 +185,12 @@ router.post('/user/cart/increase/:id/:quantity', auth, async (req, res) => {
       items: { $elemMatch: { _id: new ObjectId(req.params.id) } },
     });
     shop.items.forEach((item, index) => {
-      if (item._id == req.params.id && item.quantity - qty >= 0){
+      if (item._id == req.params.id && item.quantity - qty >= 0) {
         User.cart.forEach(async (userItem) => {
           if (userItem.quantity + qty > item.quantity)
             qty = item.quantity - userItem.quantity;
-            if(userItem._id==req.params.id)
-              userItem.quantity = userItem.quantity + parseInt(qty);
+          if (userItem._id == req.params.id)
+            userItem.quantity = userItem.quantity + parseInt(qty);
           if (userItem.quantity <= 0) {
             User.cart.pull(req.params.id);
             User.shopInCart = undefined;
@@ -350,16 +355,15 @@ router.get('/trending', async (req, res, next) => {
   try {
     const stores = await Shop.find();
     const trending = [];
-    if(stores == null) throw 'No shops were found!';
+    if (stores == null) throw 'No shops were found!';
     stores.forEach((store) => {
-      if(store.trendingItem!=null)
-      trending.push(store.trendingItem)
+      if (store.trendingItem != null) trending.push(store.trendingItem);
     });
     res.status(200).json({
       status: 'success',
       length: trending.length,
-      trending
-    })
+      trending,
+    });
   } catch (e) {
     res.status(400).json({
       status: 'failure',

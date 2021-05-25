@@ -114,9 +114,16 @@ const userSchema = new mongoose.Schema({
   ],
   address: [
     {
-      type: String,
-      trim: true,
-    },
+      location: {
+        type: String,
+        trim: true,
+      },
+      type:{
+        type: String,
+        enum: ['home', 'work', 'other'],
+      },
+      _id: false
+    }
   ],
   paymentHistory: [
     {
