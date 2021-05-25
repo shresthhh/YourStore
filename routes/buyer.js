@@ -180,16 +180,18 @@ router.post('/user/cart/increase/:id/:quantity', auth, async (req, res) => {
       items: { $elemMatch: { _id: new ObjectId(req.params.id) } },
     });
     shop.items.forEach((item, index) => {
-      if (item._id == req.params.id && item.quantity - qty >= 0)
+      if (item._id == req.params.id && item.quantity - qty >= 0){
         User.cart.forEach(async (userItem) => {
           if (userItem.quantity + qty > item.quantity)
             qty = item.quantity - userItem.quantity;
-          userItem.quantity = userItem.quantity + parseInt(qty);
+            if(userItem._id==req.params.id)
+              userItem.quantity = userItem.quantity + parseInt(qty);
           if (userItem.quantity <= 0) {
             User.cart.pull(req.params.id);
             User.shopInCart = undefined;
           }
         });
+      }
     });
     await User.save();
     res.status(200).send(User);
@@ -425,11 +427,11 @@ router.get('/shops-within/:distance/center/:latlng/', async (req, res) => {
   }
 });
 
-router.get('/searchItem', async (req, res) => {
+router.get('/searchItem/:id', async (req, res) => {
   const regex = new RegExp(`${req.query.search}`, 'i');
   const items = [];
   try {
-    const store = await Shop.findById(req.body.shopID);
+    const store = await Shop.findById(req.params.id);
     if (!store) throw 'Store not found!';
     store.items.forEach((item) => {
       if (regex.test(item.itemName)) items.push(item);
