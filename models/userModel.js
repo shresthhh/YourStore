@@ -79,6 +79,9 @@ const userSchema = new mongoose.Schema({
         shopID: {
           type: mongoose.Schema.Types.ObjectId,
         },
+        shopName:{
+          type: String,
+        },
         address: {
           type: String,
           required: true,
@@ -99,6 +102,9 @@ const userSchema = new mongoose.Schema({
       order: {
         shopID: {
           type: mongoose.Schema.Types.ObjectId,
+        },
+        shopName:{
+          type: String,
         },
         address: {
           type: String,

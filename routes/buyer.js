@@ -343,6 +343,7 @@ router.post('/user/checkout', auth, async (req, res) => {
       order: {
         totalCost: bill,
         shopID: Store._id,
+        shopName: Store.shopName,
         address: req.body.address,
         items: [],
       },
