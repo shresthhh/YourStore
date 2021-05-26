@@ -281,6 +281,23 @@ router.patch('/myProducts/:id', auth, async (req, res) => {
   }
 });
 
+router.patch('/requests/remove/:id', auth, async (req, res, next) => {
+  try {
+    const store = await Shop.findById(req.store._id);
+    store.itemsDemanded.pull(req.params.id);
+    await store.save();
+    res.status(200).json({
+      status: 'success',
+      itemsDemanded: store.itemsDemanded,
+    });
+  } catch (e) {
+    res.status(400).send({
+      status: 'failure',
+      error: e.message || e,
+    });
+  }
+});
+
 router.patch('/myProducts/delete/:id', auth, async (req, res) => {
   Shop.updateOne(
     { _id: new ObjectId(req.store._id) },
