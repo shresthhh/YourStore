@@ -484,7 +484,7 @@ router.post('/user/requestItem', auth, async (req, res) => {
   try {
     const stores = await Shop.find();
     const check = await Shop.findOne({
-      itemsDemanded: { $elemMatch: { name: req.body.name } },
+      itemsDemanded: { $elemMatch: { prodName: req.body.prodName } },
     });
     if (check) throw 'This item has already been requested!';
     const demand = {
