@@ -227,6 +227,7 @@ router.post('/store/delivered', auth, async (req, res) => {
     const reqOrder = req.body.orderID;
     const store = req.store;
     const user = await User.findById(req.body.userID);
+    if(!user) throw 'User not found!'
     user.PendingOrders.forEach((order) => {
       if (order._id.toString() == reqOrder) {
         user.OrderHistory.push(order);
