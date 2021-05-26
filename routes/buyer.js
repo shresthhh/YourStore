@@ -169,11 +169,37 @@ router.patch(
 
 router.delete('/user/delete', auth, async (req, res, next) => {
   await User.findByIdAndUpdate(req.user.id, { active: false });
-
   res.status(204).json({
     status: 'success',
     data: null,
   });
+});
+
+router.patch('/user/address', auth, async (req, res, next) => {
+  try {
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user.id,
+      {
+        $pull: {
+          address: { location: req.body.location },
+        },
+      },
+      {
+        new: true,
+      }
+    );
+    if (updatedUser) {
+      res.status(200).json({
+        status: 'success',
+        updatedUser,
+      });
+    } else throw 'Unable to update!';
+  } catch (e) {
+    res.status(400).json({
+      status: 'failure',
+      error: e.message || e,
+    });
+  }
 });
 
 router.post('/user/cart/increase/:id/:quantity', auth, async (req, res) => {
@@ -190,10 +216,9 @@ router.post('/user/cart/increase/:id/:quantity', auth, async (req, res) => {
             qty = item.quantity - userItem.quantity;
           if (userItem._id == req.params.id)
             userItem.quantity = userItem.quantity + parseInt(qty);
-          if (userItem.quantity <= 0 ) {
+          if (userItem.quantity <= 0) {
             User.cart.pull(req.params.id);
-            if(User.cart.length==0)
-              User.shopInCart = undefined;
+            if (User.cart.length == 0) User.shopInCart = undefined;
           }
         });
       }
@@ -334,7 +359,7 @@ router.post('/user/checkout', auth, async (req, res) => {
     const payments = {
       totalCost: bill,
       date: new Date(Date.now()).toISOString(),
-      shopID: Store._id,
+      shopName: Store.shopName,
     };
     User.paymentHistory.push(payments);
     await User.save();
