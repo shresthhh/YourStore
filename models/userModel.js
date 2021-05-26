@@ -135,8 +135,8 @@ const userSchema = new mongoose.Schema({
       date: {
         type: Date,
       },
-      shopID: {
-        type: mongoose.Schema.Types.ObjectId,
+      shopName: {
+        type: String,
       },
     },
   ],
