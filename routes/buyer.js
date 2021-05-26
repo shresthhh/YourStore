@@ -487,8 +487,15 @@ router.post('/user/requestItem', auth, async (req, res) => {
       itemsDemanded: { $elemMatch: { name: req.body.name } },
     });
     if (check) throw 'This item has already been requested!';
+    const demand = {
+      prodName: req.body.prodName,
+      desc: req.body.desc,
+      userName: req.user.name,
+      phoneNumber: req.user.phone,
+      qty: req.body.qty,
+    };
     stores.forEach(async (store) => {
-      store.itemsDemanded.push(req.body);
+      store.itemsDemanded.push(demand);
       await store.save();
     });
     res.status(201).send({

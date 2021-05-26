@@ -99,12 +99,17 @@ const shopSchema = new mongoose.Schema({
   },
   itemsDemanded: [
     {
-      name: {
+      prodName: {
         type: String,
-        required: true,
       },
       desc: {
         type: String,
+      },
+      userName: {
+        type: String,
+      },
+      phoneNumber: {
+        type: Number,
       },
       qty: {
         type: Number,
