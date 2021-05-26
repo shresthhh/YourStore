@@ -222,9 +222,9 @@ router.get('/myProducts', auth, async (req, res) => {
   }
 });
 
-router.post('/store/delivered/:userID', auth, async (req, res) => {
+router.post('/store/delivered/:userID/:orderID', auth, async (req, res) => {
   try {
-    const reqOrder = req.body.orderID;
+    const reqOrder = req.params.orderID;
     const store = req.store;
     const user = await User.findById(req.params.userID);
     if(!user) throw 'User not found!'
