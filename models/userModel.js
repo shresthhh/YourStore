@@ -176,7 +176,7 @@ userSchema.statics.findByCredentials = async (email, password) => {
   if (!isMatch) {
     throw new Error('Incorrect Credentials');
   }
-  user = await (await User.findOne({email})).select('-password');
+  user = await User.findOne({email}).select('-password');
   return user;
 };
 
