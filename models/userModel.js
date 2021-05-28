@@ -167,7 +167,7 @@ userSchema.methods.generateAuthToken = async function () {
 };
 
 userSchema.statics.findByCredentials = async (email, password) => {
-  const user = await User.findOne({ email });
+  let user = await User.findOne({ email });
   if (!user) {
     throw new Error('Unable to login');
   }
@@ -176,7 +176,7 @@ userSchema.statics.findByCredentials = async (email, password) => {
   if (!isMatch) {
     throw new Error('Incorrect Credentials');
   }
-
+  user = await (await User.findOne({email})).select('-password');
   return user;
 };
 
