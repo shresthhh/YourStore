@@ -6,6 +6,16 @@ const router = new express.Router();
 const auth = require('./../middleware/userAuth');
 var ObjectId = require('mongoose').Types.ObjectId;
 const UploadUserPhoto = require('./../middleware/userUpload');
+const _ = require('underscore');
+
+//modules used for verifying email route handler
+const SibApiV3Sdk = require('sib-api-v3-sdk');
+const jwt = require('jsonwebtoken');
+
+//set api key for email verification
+let defaultClient = SibApiV3Sdk.ApiClient.instance;
+let apiKey = defaultClient.authentications['api-key'];
+apiKey.apiKey = process.env.SENDINBLUE_API_KEY;
 
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
@@ -39,8 +49,61 @@ router.get('/searchShops', async function (req, res) {
 router.post('/user/signup', async (req, res) => {
   const newUser = new User(req.body);
   try {
+    let url;
+    //set up the secret used for email verification
+    const EMAIL_SECRET = process.env.EMAIL_SECRET;
     await newUser.save();
     const token = await newUser.generateAuthToken();
+
+    //email verification mail sent
+    jwt.sign(
+      {
+        user: _.pick(newUser, 'id'),
+      },
+      EMAIL_SECRET,
+      {
+        expiresIn: '1d',
+      },
+      (err, emailToken) => {
+        //building node transporter used for authenticating sender account
+        //it uses sendgrid
+        url = `https://yourstore-swe.herokuapp.com/user/confirmation/${emailToken}`;
+
+        let apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+
+        let sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+
+        // sendSmtpEmail.subject = 'My {{params.subject}}';
+        sendSmtpEmail.sender = {
+          name: 'YourStore',
+          email: 'testasdf246@gmail.com',
+        };
+        console.log(newUser.email, newUser.name);
+        sendSmtpEmail.to = [{ email: newUser.email, name: newUser.name }];
+        sendSmtpEmail.replyTo = {
+          email: 'noreply@yourstore.co',
+          name: 'YourStore',
+        };
+        sendSmtpEmail.templateId = 1;
+        sendSmtpEmail.params = {
+          parameter: 'My param value',
+          subject: 'Verify email for yourStore',
+          verify_link: url,
+          FIRSTNAME: newUser.name,
+        };
+
+        apiInstance.sendTransacEmail(sendSmtpEmail).then(
+          function (data) {
+            console.log(
+              'API called successfully. Returned data: ' + JSON.stringify(data)
+            );
+          },
+          function (error) {
+            console.error(error);
+          }
+        );
+      }
+    );
     res.status(201).json({
       status: 'success',
       data: {
@@ -56,13 +119,34 @@ router.post('/user/signup', async (req, res) => {
   }
 });
 
+router.get('/user/confirmation/:token', async (req, res, next) => {
+  try {
+    const {
+      user: { id },
+    } = jwt.verify(req.params.token, process.env.EMAIL_SECRET);
+    await User.findByIdAndUpdate(id, { active: true }, { new: true });
+    res.status(200).json({
+      status: 'success',
+    });
+  } catch (e) {
+    res.status(400).json({
+      status: 'failure',
+    });
+  }
+});
+
 router.post('/user/login', async (req, res) => {
   try {
     const user = await User.findByCredentials(
       req.body.email,
       req.body.password
     );
+    //check if account is email verified
+    if (!user.active) {
+     throw 'Please verify your email!';
+    }
     const token = await user.generateAuthToken();
+
     res.status(201).json({
       status: 'success',
       data: {

@@ -37,6 +37,10 @@ const userSchema = new mongoose.Schema({
     enum: ['m', 'f', 'o'],
     required: true,
   },
+  active: {
+    type: Boolean,
+    default: false,
+  },
   age: {
     type: Number,
     required: true,
