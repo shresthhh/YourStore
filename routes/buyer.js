@@ -53,7 +53,7 @@ router.post('/user/signup', async (req, res) => {
     //set up the secret used for email verification
     const EMAIL_SECRET = process.env.EMAIL_SECRET;
     await newUser.save();
-    const token = await newUser.generateAuthToken();
+    // const token = await newUser.generateAuthToken();
 
     //email verification mail sent
     jwt.sign(
@@ -78,7 +78,7 @@ router.post('/user/signup', async (req, res) => {
           name: 'YourStore',
           email: 'testasdf246@gmail.com',
         };
-        console.log(newUser.email, newUser.name);
+
         sendSmtpEmail.to = [{ email: newUser.email, name: newUser.name }];
         sendSmtpEmail.replyTo = {
           email: 'noreply@yourstore.co',
@@ -107,7 +107,6 @@ router.post('/user/signup', async (req, res) => {
     res.status(201).json({
       status: 'success',
       data: {
-        token,
         user: newUser,
       },
     });
@@ -143,7 +142,7 @@ router.post('/user/login', async (req, res) => {
     );
     //check if account is email verified
     if (!user.active) {
-     throw 'Please verify your email!';
+      throw 'Please verify your email!';
     }
     const token = await user.generateAuthToken();
 
